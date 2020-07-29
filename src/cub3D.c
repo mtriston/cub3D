@@ -34,9 +34,9 @@ void	init_player(t_vars *vars)
 {
 	vars->x = WINDOW_WIDTH / 2;
 	vars->y = WINDOW_HEIGHT / 2;
-	vars->turn_direction = 0;
-	vars->walk_direction = 0;
-	vars->rotation_angle = 3.14159265359 / 2;
+	vars->turn_direction = 0.0;
+	vars->walk_direction = 0.0;
+	vars->rotation_angle = M_PI / 2;
 }
 
 void	clear(t_vars *vars)
@@ -66,19 +66,19 @@ int		is_wall(int x, int y, t_vars *vars)
 
 void	player_location(t_vars *vars)
 {
-	int next_x;
-	int next_y;
-	int move_step;
+	float next_x;
+	float next_y;
+	float move_step;
 	move_step = vars->walk_direction * MOVE_SPEED;
 	vars->rotation_angle += vars->turn_direction * ROTATION_SPEED;
 	next_x = vars->x + cos(vars->rotation_angle) * move_step;
 	next_y = vars->y + sin(vars->rotation_angle) * move_step;
-	if (!is_wall(next_x, next_y, vars))
+	if (!is_wall((int)next_x, (int)next_y, vars))
 	{
 		vars->x = next_x;
 		vars->y = next_y;
 	}
-	printf("x = %d, y = %d, rotation_angle = %f, turn_dir = %f, walk_dir = %d\n",\
+	printf("x = %f, y = %f, rotation_angle = %f, turn_dir = %f, walk_dir = %f\n",\
 	vars->x, vars->y, vars->rotation_angle, vars->turn_direction, vars->walk_direction);
 	vars->turn_direction = 0;
 	vars->walk_direction = 0;
@@ -86,9 +86,9 @@ void	player_location(t_vars *vars)
 
 int		render_next_frame(t_vars *vars)
 { 
-	draw_minimap(vars);
+	//draw_minimap(vars);
 	player_location(vars);
-	my_mlx_pixel_put(vars, vars->x, vars->y, 0x00FF0000);
+	my_mlx_pixel_put(vars, (int)vars->x, (int)vars->y, 0x00FF0000);
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img, 0, 0);
 	return (1);
 }

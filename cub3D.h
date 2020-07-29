@@ -6,10 +6,9 @@
 #define TILE_SIZE 32 
 
 #define MOVE_SPEED 4 
-#define ROTATION_SPEED 2 * 0.017453293 
+#define ROTATION_SPEED 2 * (M_PI / 180) 
 
-#define	PI 3.14159265359
-#define FOV_ANGLE 1.047197551
+#define FOV_ANGLE M_PI / 2 
 
 #define WALL_STRIP_WIDTH 1
 #define NUM_RAYS WINDOW_WIDTH / WALL_STRIP_WIDTH
@@ -29,11 +28,11 @@ typedef struct	s_vars
 {
 	void		*mlx;
 	void		*win;
-	int			x;
-	int			y;
-	double		turn_direction;
-	int			walk_direction;
-	double		rotation_angle;
+	float			x;
+	float			y;
+	float		turn_direction;
+	float			walk_direction;
+	float		rotation_angle;
 	void		*img;
 	char		*addr;
 	int			bits_per_pixel;
