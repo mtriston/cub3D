@@ -36,7 +36,7 @@ void	init_player(t_vars *vars)
 	vars->y = WINDOW_HEIGHT / 2;
 	vars->turn_direction = 0;
 	vars->walk_direction = 0;
-	vars->rotation_angle = 3.14159265359 / 2;
+	vars->rotation_angle = M_PI / 2;
 }
 
 void	clear(t_vars *vars)
@@ -69,8 +69,11 @@ void	player_location(t_vars *vars)
 	int next_x;
 	int next_y;
 	int move_step;
+	double rotation_speed;
+
+	rotation_speed = 2 * (M_PI / 180);
 	move_step = vars->walk_direction * MOVE_SPEED;
-	vars->rotation_angle += vars->turn_direction * ROTATION_SPEED;
+	vars->rotation_angle += vars->turn_direction * rotation_speed;
 	next_x = vars->x + cos(vars->rotation_angle) * move_step;
 	next_y = vars->y + sin(vars->rotation_angle) * move_step;
 	if (!is_wall(next_x, next_y, vars))
