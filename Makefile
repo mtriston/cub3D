@@ -31,3 +31,10 @@ $(NAME): $(OBJ)
 	make -C $(LIBFT_DIR)
 	$(CC) -o $(NAME) $(OBJ) $(LIBFT) $(MLX_FLAGS)
 
+clean:
+	rm -rf $(OBJ)
+
+fclean: clean
+	rm -rf $(NAME)
+
+re: fclean all
