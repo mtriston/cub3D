@@ -1,5 +1,14 @@
 #include "../cub3D.h"
 
+static void draw_player(t_vars *vars)
+{
+	if (vars->x + 2 < WINDOW_WIDTH && (int)vars->x - 2 > 0 && \
+		vars->y + 2 < WINDOW_HEIGHT && (int)vars->y - 2 > 0)
+	{
+		ft_rect((int)vars->x + 2, (int)vars->y + 2, 5, 5, 0x00FF0000, vars);
+	}
+}
+
 void	draw_minimap(t_vars *vars)
 {
 	int i;
@@ -28,5 +37,5 @@ void	draw_minimap(t_vars *vars)
 		tileX = 0;
 		tileY += TILE_SIZE;
 	}
-	mlx_put_image_to_window(vars->mlx, vars->win, vars->img, 0, 0);
+	draw_player(vars);
 }
