@@ -1,6 +1,6 @@
 #include "../cub3D.h"
 
-static void	*free_array(int **array)
+static void	*free_array(char **array)
 {
 	int i;
 
@@ -38,47 +38,20 @@ static int	count_lines(char *path)
 	return (i);
 }
 
-static int	count_digits(char *line)
+/*static int	check_digits(char *line)
 {
-	int i;
-
-	i = 0;
 	while (*line != '\0')
 	{
-		if (ft_isdigit(*line))
-			i++;
+		if (!ft_isdigit(*line))
+			return (-1);
 		line++;
 	}
-	return (i);
+	return (1);
 }
-
-static int	*parse_line(char *line)
+*/
+char		**parse_map(char *path)
 {
-	int	i;
-	int *array;
-
-	i = 0;
-	array = (int *)malloc(sizeof(int) * (count_digits(line) + 1));
-	if (array == NULL)
-		return (NULL);
-	//TODO: exit + error
-	while (*line != '\0')
-	{
-		if (ft_isdigit(*line))
-		{
-			array[i] = *line - '0';
-			i++;
-		}
-		line++;
-	}
-	array[i] = -1;
-	
-	return (array);
-}
-
-int			**parse_map(char *path)
-{
-	int 	**map;
+	char 	**map;
 	int		fd;
 	int		i;
 	int		return_value;
@@ -87,7 +60,7 @@ int			**parse_map(char *path)
 	if (path == NULL)
 		//TODO: exit + error
 		return (NULL);
-	if (!(map = (int **)malloc(sizeof(int *) * (count_lines(path) + 1))))
+	if (!(map = (char **)malloc(sizeof(char *) * (count_lines(path) + 1))))
 		// TODO: exit + error
 		return (NULL);
 	fd = open(path, O_RDONLY);
@@ -95,8 +68,7 @@ int			**parse_map(char *path)
 	i = 0;
 	while ((return_value = get_next_line(fd, &line)))
 	{
-		if (!(map[i] = parse_line(line)))
-			return (free_array(map));
+		map[i] = line;
 		i++;
 	}
 	map[i] = NULL;

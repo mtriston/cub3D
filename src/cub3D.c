@@ -1,15 +1,15 @@
 #include "../cub3D.h"
 #include <stdio.h>
 
-void	my_mlx_pixel_put(t_vars *data, int x, int y, int color)
+void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
 {
 	char *dst;
 
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
 	*(unsigned int *)dst = color;
 }
 
-void	ft_rect(int x, int y, int width, int height, int color, t_vars *vars)
+void	ft_rect(int x, int y, int width, int height, int color, t_img *img)
 {
 	int i;
 	int j;
@@ -21,47 +21,36 @@ void	ft_rect(int x, int y, int width, int height, int color, t_vars *vars)
 		while (j <= y + height)
 		{
 			if (j == y || j == height || i == x || i == width)
-				my_mlx_pixel_put(vars, i, j, 0x33333333);
+				my_mlx_pixel_put(img, i, j, 0x33333333);
 			else
-				my_mlx_pixel_put(vars, i, j, color);
+				my_mlx_pixel_put(img, i, j, color);
 			j++;
 		}
 		i++;
 	}
 }
 
-void	init_player(t_vars *vars)
+void	setup(t_vars *vars)
 {
-	vars->x = WINDOW_WIDTH / 2;
-	vars->y = WINDOW_HEIGHT / 2;
-	vars->turn_direction = 0;
-	vars->walk_direction = 0;
-	vars->rotation_angle = M_PI / 2;
+	vars->player.x = WINDOW_WIDTH / 2;
+	vars->player.y = WINDOW_HEIGHT / 2;
+	vars->player.turn_direction = 0;
+	vars->player.walk_direction = 0;
+	vars->player.rotation_angle = M_PI / 2;
+	vars->player.walk_speed = 5;
+	vars->player.turn_speed = 10 * (M_PI / 180);
 }
 
-void	clear(t_vars *vars)
+int		map_has_wall_at(float x, float y, t_map *map)
 {
-	int i;
-	int j;
+	int map_x;
+	int map_y;
 
-	i = 0;
-	while (i < WINDOW_WIDTH)
-	{
-	j = 0;
-		while (j < WINDOW_HEIGHT)
-		{
-			my_mlx_pixel_put(vars, i, j, 0x00000000);
-			j++;
-		}
-		i++;
-	}
-}
-
-int		is_wall(int x, int y, t_vars *vars)
-{
 	if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT)
-		return (1);
-	return (vars->map[y / TILE_SIZE][x / TILE_SIZE]);
+		return (TRUE);
+	map_x = (int)(floor(x / TILE_SIZE));
+	map_y = (int)(floor(y / TILE_SIZE));
+	return (map->map[map_y][map_x]) != '0';
 }
 
 void	player_location(t_vars *vars)
@@ -69,25 +58,25 @@ void	player_location(t_vars *vars)
 	float next_x;
 	float next_y;
 	float move_step;
-	move_step = vars->walk_direction * MOVE_SPEED;
-	vars->rotation_angle += vars->turn_direction * rotation_speed;
-	next_x = vars->x + cos(vars->rotation_angle) * move_step;
-	next_y = vars->y + sin(vars->rotation_angle) * move_step;
-	if (!is_wall((int)next_x, (int)next_y, vars))
+	move_step = vars->player.walk_direction * vars->player.walk_speed;
+	vars->player.rotation_angle += vars->player.turn_direction * vars->player.turn_speed;
+	next_x = vars->player.x + cosf(vars->player.rotation_angle) * move_step;
+	next_y = vars->player.y + sinf(vars->player.rotation_angle) * move_step;
+	if (!map_has_wall_at(next_x, next_y, &vars->map))
 	{
-		vars->x = next_x;
-		vars->y = next_y;
+		vars->player.x = next_x;
+		vars->player.y = next_y;
 	}
-	vars->turn_direction = 0;
-	vars->walk_direction = 0;
+	vars->player.turn_direction = 0;
+	vars->player.walk_direction = 0;
 }
 
 int		render_next_frame(t_vars *vars)
 { 
-	//draw_minimap(vars);
+	draw_minimap(vars);
 	player_location(vars);
-	my_mlx_pixel_put(vars, (int)vars->x, (int)vars->y, 0x00FF0000);
-	mlx_put_image_to_window(vars->mlx, vars->win, vars->img, 0, 0);
+	my_mlx_pixel_put(&vars->img, (int)vars->player.x, (int)vars->player.y, 0x00FF);
+	mlx_put_image_to_window(vars->screen.mlx, vars->screen.win, vars->img.img, 0, 0);
 	return (1);
 }
 
@@ -96,13 +85,13 @@ int		key_pressed(int keycode, t_vars *vars)
 {
 
 	if (keycode == LEFT_ARROW)
-		vars->turn_direction = -1;
+		vars->player.turn_direction = -1;
 	else if (keycode == UP_ARROW)
-		vars->walk_direction = 1; 
+		vars->player.walk_direction = 1; 
 	else if (keycode == RIGHT_ARROW)
-		vars->turn_direction = 1;
+		vars->player.turn_direction = 1;
 	else if (keycode == DOWN_ARROW)
-		vars->walk_direction = -1; 
+		vars->player.walk_direction = -1; 
 	return (1);
 }
 
@@ -110,13 +99,13 @@ int		key_released(int keycode, t_vars *vars)
 {
 
 	if (keycode == LEFT_ARROW)
-		vars->turn_direction = 0;
+		vars->player.turn_direction = 0;
 	else if (keycode == UP_ARROW)
-		vars->walk_direction = 0; 
+		vars->player.walk_direction = 0; 
 	else if (keycode == RIGHT_ARROW)
-		vars->turn_direction = 0;
+		vars->player.turn_direction = 0;
 	else if (keycode == DOWN_ARROW)
-		vars->walk_direction = 0; 
+		vars->player.walk_direction = 0; 
 	return (1);
 }
 
@@ -124,17 +113,16 @@ int		main(void)
 {
 	t_vars	vars;
 
-	vars.mlx = mlx_init();
-	vars.win = mlx_new_window(vars.mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
-	init_player(&vars);
-	vars.img = mlx_new_image(vars.mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
-	vars.addr = mlx_get_data_addr(vars.img, &vars.bits_per_pixel, &vars.line_length, &vars.endian);
-	mlx_put_image_to_window(vars.mlx, vars.win, vars.img, 0, 0);
-	mlx_loop_hook(vars.mlx, render_next_frame, &vars);
-	vars.map = parse_map("./map.cub");
-	mlx_hook(vars.win, 2, 1L<<0, key_pressed, &vars);
-	mlx_hook(vars.win, 3, 1L<<1, key_released, &vars);
-	mlx_key_hook(vars.win, key_pressed, &vars);
-	mlx_loop(vars.mlx);
+	vars.screen.mlx = mlx_init();
+	vars.screen.win = mlx_new_window(vars.screen.mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
+	setup(&vars);
+	vars.img.img = mlx_new_image(vars.screen.mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
+	vars.img.addr = mlx_get_data_addr(vars.img.img, &vars.img.bits_per_pixel, &vars.img.line_length, &vars.img.endian);
+	mlx_put_image_to_window(vars.screen.mlx, vars.screen.win, vars.img.img, 0, 0);
+	mlx_loop_hook(vars.screen.mlx, render_next_frame, &vars);
+	vars.map.map = parse_map("./map.cub");
+	mlx_hook(vars.screen.win, 2, 1L<<0, key_pressed, &vars);
+	mlx_hook(vars.screen.win, 3, 1L<<1, key_released, &vars);
+	mlx_loop(vars.screen.mlx);
 	return (0);
 }
