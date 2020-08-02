@@ -30,27 +30,16 @@ void	ft_rect(int x, int y, int width, int height, int color, t_img *img)
 	}
 }
 
-void	setup(t_vars *vars)
-{
-	vars->player.x = WINDOW_WIDTH / 2;
-	vars->player.y = WINDOW_HEIGHT / 2;
-	vars->player.turn_direction = 0;
-	vars->player.walk_direction = 0;
-	vars->player.rotation_angle = M_PI / 2;
-	vars->player.walk_speed = 5;
-	vars->player.turn_speed = 10 * (M_PI / 180);
-}
-
-int		map_has_wall_at(float x, float y, t_map *map)
+int		map_has_wall_at(float x, float y, t_vars *vars)
 {
 	int map_x;
 	int map_y;
 
-	if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT)
+	if (x < 0 || x > vars->screen.width || y < 0 || y > vars->screen.height)
 		return (TRUE);
-	map_x = (int)(floor(x / TILE_SIZE));
-	map_y = (int)(floor(y / TILE_SIZE));
-	return (map->map[map_y][map_x]) != '0';
+	map_x = (int)((x / vars->map.tile_size));
+	map_y = (int)((y / vars->map.tile_size));
+	return (vars->map.map[map_y][map_x]) == '1';
 }
 
 void	player_location(t_vars *vars)
@@ -62,7 +51,7 @@ void	player_location(t_vars *vars)
 	vars->player.rotation_angle += vars->player.turn_direction * vars->player.turn_speed;
 	next_x = vars->player.x + cosf(vars->player.rotation_angle) * move_step;
 	next_y = vars->player.y + sinf(vars->player.rotation_angle) * move_step;
-	if (!map_has_wall_at(next_x, next_y, &vars->map))
+	if (!map_has_wall_at(next_x, next_y, vars))
 	{
 		vars->player.x = next_x;
 		vars->player.y = next_y;
@@ -75,7 +64,8 @@ int		render_next_frame(t_vars *vars)
 { 
 	draw_minimap(vars);
 	player_location(vars);
-	my_mlx_pixel_put(&vars->img, (int)vars->player.x, (int)vars->player.y, 0x00FF);
+	ft_rect((int)(vars->player.x * MINIMAP_SCALE), \
+	(int)(vars->player.y * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), 0x00FF0000, &vars->img);
 	mlx_put_image_to_window(vars->screen.mlx, vars->screen.win, vars->img.img, 0, 0);
 	return (1);
 }
@@ -109,18 +99,14 @@ int		key_released(int keycode, t_vars *vars)
 	return (1);
 }
 
-int		main(void)
+int		main(int argc, char **argv)
 {
 	t_vars	vars;
-
-	vars.screen.mlx = mlx_init();
-	vars.screen.win = mlx_new_window(vars.screen.mlx, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3D");
-	setup(&vars);
-	vars.img.img = mlx_new_image(vars.screen.mlx, WINDOW_WIDTH, WINDOW_HEIGHT);
-	vars.img.addr = mlx_get_data_addr(vars.img.img, &vars.img.bits_per_pixel, &vars.img.line_length, &vars.img.endian);
-	mlx_put_image_to_window(vars.screen.mlx, vars.screen.win, vars.img.img, 0, 0);
+	if (argc != 2)
+		return (-1);
+//TODO: invalid num of arguments
+	setup(&vars, argv[1]);
 	mlx_loop_hook(vars.screen.mlx, render_next_frame, &vars);
-	vars.map.map = parse_map("./map.cub");
 	mlx_hook(vars.screen.win, 2, 1L<<0, key_pressed, &vars);
 	mlx_hook(vars.screen.win, 3, 1L<<1, key_released, &vars);
 	mlx_loop(vars.screen.mlx);
