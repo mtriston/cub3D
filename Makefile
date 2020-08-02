@@ -11,7 +11,9 @@ get_next_line/get_next_line_utils.c
 
 
 SRC = cub3D          \
-	  map            \
+      parser         \
+	  parse_map      \
+	  setup			 \
 	  draw_minimap   \
 	  color          \
 
@@ -38,3 +40,6 @@ fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
+
+run: all
+	./cub3D map.cub
