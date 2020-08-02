@@ -20,12 +20,19 @@ void	draw_minimap(t_vars *vars)
 				color = 0x00000000;
 			else
 				color = 0xFFFFFFFF;
-			ft_rect(tileX, tileY, TILE_SIZE, TILE_SIZE, color, &vars->img);
-			tileX += TILE_SIZE;
+			if (vars->map.map[i][j] != ' ')
+				ft_rect(\
+				tileX * MINIMAP_SCALE, \
+				tileY * MINIMAP_SCALE, \
+				vars->map.tile_size * MINIMAP_SCALE, \
+				vars->map.tile_size * MINIMAP_SCALE,\
+				color, \
+				&vars->img);
+			tileX += vars->map.tile_size;
 			j++;
 		}
 		i++;
 		tileX = 0;
-		tileY += TILE_SIZE;
+		tileY += vars->map.tile_size;
 	}
 }
