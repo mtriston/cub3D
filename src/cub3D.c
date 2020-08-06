@@ -1,5 +1,4 @@
 #include "../cub3D.h"
-#include <stdio.h>
 
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
 {
@@ -34,12 +33,30 @@ int		map_has_wall_at(float x, float y, t_vars *vars)
 {
 	int map_x;
 	int map_y;
+	int i;
+	int j;
 
 	if (x < 0 || x > vars->screen.width || y < 0 || y > vars->screen.height)
-		return (TRUE);
+		return (2);
+	i = 0;
+	j = 0;
 	map_x = (int)((x / vars->map.tile_size));
 	map_y = (int)((y / vars->map.tile_size));
-	return (vars->map.map[map_y][map_x]) == '1';
+	while (vars->map.map[i] != NULL)
+	{
+		if (i == map_y)
+			break;
+		i++;
+	}
+	while (vars->map.map[i] && vars->map.map[i][j] != '\0')
+	{
+		if (j == map_x)
+			break;
+		j++;
+	}
+	if (i != map_y || j != map_x)
+		return (2);
+	return (vars->map.map[map_y][map_x] == '1');
 }
 
 void	player_location(t_vars *vars)
@@ -64,8 +81,8 @@ int		render_next_frame(t_vars *vars)
 { 
 	draw_minimap(vars);
 	player_location(vars);
-	ft_rect((int)(vars->player.x * MINIMAP_SCALE), \
-	(int)(vars->player.y * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), 0x00FF0000, &vars->img);
+	cast_rays(vars);
+	ft_rect((int)(vars->player.x * MINIMAP_SCALE),	(int)(vars->player.y * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), 0x00FF0000, &vars->img);
 	mlx_put_image_to_window(vars->screen.mlx, vars->screen.win, vars->img.img, 0, 0);
 	return (1);
 }
@@ -82,6 +99,8 @@ int		key_pressed(int keycode, t_vars *vars)
 		vars->player.turn_direction = 1;
 	else if (keycode == DOWN_ARROW)
 		vars->player.walk_direction = -1; 
+	ft_rect(0, 0, vars->screen.width, vars->screen.height, 0x00000000, &vars->img);
+	render_walls(vars);
 	return (1);
 }
 
