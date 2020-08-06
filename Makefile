@@ -10,11 +10,14 @@ GET_NEXT_LINE = get_next_line/get_next_line.c \
 get_next_line/get_next_line_utils.c
 
 
+HEADER = cub3D.h
+
 SRC = cub3D          \
       parser         \
 	  parse_map      \
 	  setup			 \
 	  draw_minimap   \
+	  raycast        \
 	  color          \
 
 ADD = $(addsuffix .c, $(addprefix src/, $(SRC)))
@@ -25,13 +28,13 @@ OBJ = $(ADD:.c=.o)
 all: $(NAME)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -g -c $< -o $@
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(HEADER)
 	
 	make -C $(MLX_DIR)
 	make -C $(LIBFT_DIR)
-	$(CC) -o $(NAME) $(OBJ) $(LIBFT) $(MLX_FLAGS)
+	$(CC) -g -o $(NAME) $(OBJ) $(LIBFT) $(MLX_FLAGS)
 
 clean:
 	rm -rf $(OBJ)
