@@ -23,12 +23,17 @@ void			render_walls(t_vars *vars)
 	plane = vars->screen.width / 2 / tanf(FOV_ANGLE / 2);
 	while (i < vars->screen.width)
 	{
+		if (vars->ray[i].distance == 0)
+			vars->ray[i].distance = 1;
 		ray_distance = vars->ray[i].distance * cosf(vars->ray[i].ray_angle - vars->player.rotation_angle);
 		wall_height = (vars->map.tile_size / ray_distance) * plane;
 		wall_top = vars->screen.height / 2 - wall_height / 2;
 		wall_top = wall_top < 0 ? 0 : wall_top;
-		wall_height = wall_height + wall_top >= (vars->screen.height - 1) ? vars->screen.height - 1 : wall_height;
-		ft_rect(i, wall_top, 1, wall_height, 0x33333333, &vars->img);
+		wall_height = wall_height + wall_top >= (vars->screen.height) ? vars->screen.height : wall_height;
+		if (vars->ray[i].is_vertical_hit)
+			ft_rect(i, wall_top, 1, wall_height, 0x00AA0408, &vars->img);
+		else
+			ft_rect(i, wall_top, 1, wall_height, 0x0000AA59, &vars->img);
 		i++;
 	}
 }
@@ -137,6 +142,7 @@ void			cast_rays(t_vars *vars)
 		vert_distance = find_vertical_interception(vars, &vars->ray[i]);
 		horz_distance = find_horizontal_interception(vars, &vars->ray[i]);
 		vars->ray[i].distance = horz_distance < vert_distance ? horz_distance : vert_distance;
+		vars->ray[i].is_vertical_hit = (horz_distance >= vert_distance); 
 		ray_angle += FOV_ANGLE / vars->screen.width;
 		i++;
 	}
