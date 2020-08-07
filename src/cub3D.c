@@ -19,9 +19,9 @@ void	ft_rect(int x, int y, int width, int height, int color, t_img *img)
 		j = y;
 		while (j <= y + height)
 		{
-			if (j == y || j == height || i == x || i == width)
-				my_mlx_pixel_put(img, i, j, 0x33333333);
-			else
+		//	if (j == y || j == height || i == x || i == width)
+		//		my_mlx_pixel_put(img, i, j, 0x33333333);
+		//	else
 				my_mlx_pixel_put(img, i, j, color);
 			j++;
 		}
@@ -48,15 +48,20 @@ int		map_has_wall_at(float x, float y, t_vars *vars)
 			break;
 		i++;
 	}
+	if (vars->map.map[i] == NULL)
+		return (2);
 	while (vars->map.map[i] && vars->map.map[i][j] != '\0')
 	{
 		if (j == map_x)
 			break;
 		j++;
 	}
+	if (vars->map.map[i][j] == '\0')
+		return (2);
 	if (i != map_y || j != map_x)
 		return (2);
-	return (vars->map.map[map_y][map_x] == '1');
+	
+	return (vars->map.map[map_y][map_x] != '0');
 }
 
 void	player_location(t_vars *vars)
@@ -79,9 +84,11 @@ void	player_location(t_vars *vars)
 
 int		render_next_frame(t_vars *vars)
 { 
-	draw_minimap(vars);
+	ft_rect(0, 0, vars->screen.width, vars->screen.height, 0x00000000, &vars->img);
 	player_location(vars);
 	cast_rays(vars);
+	render_walls(vars);
+	draw_minimap(vars);
 	ft_rect((int)(vars->player.x * MINIMAP_SCALE),	(int)(vars->player.y * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), 0x00FF0000, &vars->img);
 	mlx_put_image_to_window(vars->screen.mlx, vars->screen.win, vars->img.img, 0, 0);
 	return (1);
@@ -99,8 +106,7 @@ int		key_pressed(int keycode, t_vars *vars)
 		vars->player.turn_direction = 1;
 	else if (keycode == DOWN_ARROW)
 		vars->player.walk_direction = -1; 
-	ft_rect(0, 0, vars->screen.width, vars->screen.height, 0x00000000, &vars->img);
-	render_walls(vars);
+	render_next_frame(vars);
 	return (1);
 }
 
@@ -115,6 +121,7 @@ int		key_released(int keycode, t_vars *vars)
 		vars->player.turn_direction = 0;
 	else if (keycode == DOWN_ARROW)
 		vars->player.walk_direction = 0; 
+	render_next_frame(vars);
 	return (1);
 }
 
@@ -125,7 +132,7 @@ int		main(int argc, char **argv)
 		return (-1);
 //TODO: invalid num of arguments
 	setup(&vars, argv[1]);
-	mlx_loop_hook(vars.screen.mlx, render_next_frame, &vars);
+//	mlx_loop_hook(vars.screen.mlx, render_next_frame, &vars);
 	mlx_hook(vars.screen.win, 2, 1L<<0, key_pressed, &vars);
 	mlx_hook(vars.screen.win, 3, 1L<<1, key_released, &vars);
 	mlx_loop(vars.screen.mlx);
