@@ -17,6 +17,8 @@ SRC = cub3D          \
 	  parse_map      \
 	  setup			 \
 	  draw_minimap   \
+	  render		 \
+	  texture        \
 	  raycast        \
 	  color          \
 
@@ -44,5 +46,5 @@ fclean: clean
 
 re: fclean all
 
-run: all
+run: re 
 	./cub3D map.cub
