@@ -48,15 +48,15 @@ static void	write_path_to_file(char *str, t_vars *vars, char type)
 	if (temp)
 		*temp = '\0';
 	if (type == 'N')
-		vars->texture.north = vars->texture.north == NULL ? str : NULL;
+		import_texture(str, &vars->texture.north, vars->screen.mlx);
 	if (type == 'S')
-		vars->texture.south = vars->texture.south == NULL ? str : NULL;
+		import_texture(str, &vars->texture.south, vars->screen.mlx);
 	if (type == 'W')
-		vars->texture.west = vars->texture.west == NULL ? str : NULL;
+		import_texture(str, &vars->texture.west, vars->screen.mlx);
 	if (type == 'E')
-		vars->texture.east = vars->texture.east == NULL ? str : NULL;
+		import_texture(str, &vars->texture.east, vars->screen.mlx);
 	if (type == 's')
-		vars->sprite.path = vars->sprite.path == NULL ? str : NULL;
+		import_texture(str, &vars->texture.sprite, vars->screen.mlx);
 }
 
 static void	parse_parameters(t_list **list, t_vars *vars)

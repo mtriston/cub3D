@@ -14,11 +14,6 @@ static void	prepare_structs(t_vars *vars)
 	vars->map.map = NULL;
 	vars->map.floor_color = 0;
 	vars->map.ceil_color = 0;
-	vars->texture.north = NULL;
-	vars->texture.south = NULL;
-	vars->texture.west = NULL;
-	vars->texture.east = NULL;
-	vars->sprite.path = NULL;
 }
 
 static void	init_img(t_img *img, t_screen *screen)
