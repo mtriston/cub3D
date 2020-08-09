@@ -1,62 +1,32 @@
 #include "../cub3D.h"
 
-float			normalize_angle(float angle)
+double			normalize_angle(double angle)
 {
-	while (angle > (2 * M_PI))
-		angle = angle - (2 * M_PI);
-	while (angle < (-2 * M_PI))
-		angle = angle + (2 * M_PI);
+	angle = remainder(angle, M_PI * 2);
 	if (angle < 0)
 		angle = (2 * M_PI) + angle;
 	return (angle);
 }
 
-void			render_walls(t_vars *vars)
+static double	distance_between_points(double x1, double x2, double y1, double y2)
 {
-	int i;
-	float ray_distance;
-	float plane;
-	int wall_height;
-	int wall_top;
+	double result;
 
-	i = 0;
-	plane = vars->screen.width / 2 / tanf(FOV_ANGLE / 2);
-	while (i < vars->screen.width)
-	{
-		if (vars->ray[i].distance == 0)
-			vars->ray[i].distance = 1;
-		ray_distance = vars->ray[i].distance * cosf(vars->ray[i].ray_angle - vars->player.rotation_angle);
-		wall_height = (vars->map.tile_size / ray_distance) * plane;
-		wall_top = vars->screen.height / 2 - wall_height / 2;
-		wall_top = wall_top < 0 ? 0 : wall_top;
-		wall_height = wall_height + wall_top >= (vars->screen.height) ? vars->screen.height : wall_height;
-		if (vars->ray[i].is_vertical_hit)
-			ft_rect(i, wall_top, 1, wall_height, 0x00AA0408, &vars->img);
-		else
-			ft_rect(i, wall_top, 1, wall_height, 0x0000AA59, &vars->img);
-		i++;
-	}
-}
-
-static float	distance_between_points(float x1, float x2, float y1, float y2)
-{
-	float result;
-
-	result = sqrtf((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+	result = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
 	return (result);
 }
 
-static int		find_vertical_interception(t_vars *vars, t_ray ray)
+static double	find_vertical_interception(t_vars *vars, t_ray ray)
 {
 	t_ray_utils vert;
 	vert.x_intercept = floorf(vars->player.x / vars->map.tile_size) * vars->map.tile_size;
 	vert.x_intercept += ray->is_ray_facing_right ? vars->map.tile_size : 0;
-	vert.y_intercept = vars->player.y + (vert.x_intercept - vars->player.x) * tanf(ray->ray_angle);
-	vert.y_intercept = vert.y_intercept < 0 ? vars->screen.height : vert.y_intercept;  
-	vert.y_intercept = vert.y_intercept > vars->screen.height ? vars->screen.height : vert.y_intercept;  
+	vert.y_intercept = vars->player.y + (vert.x_intercept - vars->player.x) * tan(ray->ray_angle);
+	if (vert.y_intercept < 0 || vert.y_intercept > vars->screen.height)
+		return (INT_MAX);
 	vert.x_step = vars->map.tile_size;
 	vert.x_step *= ray->is_ray_facing_left ? -1 : 1;
-	vert.y_step = vars->map.tile_size * tanf(ray->ray_angle);
+	vert.y_step = vars->map.tile_size * tan(ray->ray_angle);
 	vert.y_step *= (ray->is_ray_facing_up && vert.y_step > 0) ? -1 : 1;
 	vert.y_step *= (ray->is_ray_facing_down && vert.y_step < 0) ? -1 : 1;
 	vert.next_x = vert.x_intercept;
@@ -84,17 +54,17 @@ static int		find_vertical_interception(t_vars *vars, t_ray ray)
 			vars->player.y, vert.hit_wall_y));
 }
 
-static int		find_horizontal_interception(t_vars *vars, t_ray ray)
+static double	find_horizontal_interception(t_vars *vars, t_ray ray)
 {
 	t_ray_utils horz;
 	horz.y_intercept = floorf(vars->player.y / vars->map.tile_size) * vars->map.tile_size;
 	horz.y_intercept += ray->is_ray_facing_down ? vars->map.tile_size : 0;
-	horz.x_intercept = vars->player.x + (horz.y_intercept - vars->player.y) / tanf(ray->ray_angle);
-	horz.x_intercept = horz.x_intercept < 0 ? vars->screen.height : horz.x_intercept;  
-	horz.x_intercept = horz.x_intercept > vars->screen.width ? vars->screen.width : horz.x_intercept;  
+	horz.x_intercept = vars->player.x + (horz.y_intercept - vars->player.y) / tan(ray->ray_angle);
+	if (horz.y_intercept < 0 || horz.y_intercept > vars->screen.width)
+		return (INT_MAX);
 	horz.y_step = vars->map.tile_size;
 	horz.y_step *= ray->is_ray_facing_up ? -1 : 1;
-	horz.x_step = vars->map.tile_size / tanf(ray->ray_angle);
+	horz.x_step = vars->map.tile_size / tan(ray->ray_angle);
 	horz.x_step *= (ray->is_ray_facing_left && horz.x_step > 0) ? -1 : 1;
 	horz.x_step *= (ray->is_ray_facing_right && horz.x_step < 0) ? -1 : 1;
 	horz.next_y = horz.y_intercept;
@@ -125,9 +95,9 @@ static int		find_horizontal_interception(t_vars *vars, t_ray ray)
 void			cast_rays(t_vars *vars)
 {
 	int		i;
-	float	ray_angle;
-	float	vert_distance;
-	float	horz_distance;
+	double	ray_angle;
+	double	vert_distance;
+	double	horz_distance;
 
 	i = 0;
 	ray_angle = vars->player.rotation_angle - FOV_ANGLE / 2;
@@ -141,8 +111,16 @@ void			cast_rays(t_vars *vars)
 		vars->ray[i].is_ray_facing_left = !vars->ray[i].is_ray_facing_right;
 		vert_distance = find_vertical_interception(vars, &vars->ray[i]);
 		horz_distance = find_horizontal_interception(vars, &vars->ray[i]);
-		vars->ray[i].distance = horz_distance < vert_distance ? horz_distance : vert_distance;
-		vars->ray[i].is_vertical_hit = (horz_distance >= vert_distance); 
+		if (vert_distance > horz_distance)
+		{	
+			vars->ray[i].distance = sqrt(horz_distance);
+			vars->ray[i].is_vertical_hit = FALSE;
+		}
+		else
+		{
+			vars->ray[i].distance = sqrt(vert_distance);
+			vars->ray[i].is_vertical_hit = TRUE;
+		}
 		ray_angle += FOV_ANGLE / vars->screen.width;
 		i++;
 	}

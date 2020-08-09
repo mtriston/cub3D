@@ -19,9 +19,6 @@ void	ft_rect(int x, int y, int width, int height, int color, t_img *img)
 		j = y;
 		while (j <= y + height)
 		{
-		//	if (j == y || j == height || i == x || i == width)
-		//		my_mlx_pixel_put(img, i, j, 0x33333333);
-		//	else
 				my_mlx_pixel_put(img, i, j, color);
 			j++;
 		}
@@ -29,7 +26,7 @@ void	ft_rect(int x, int y, int width, int height, int color, t_img *img)
 	}
 }
 
-int		map_has_wall_at(float x, float y, t_vars *vars)
+int		map_has_wall_at(double x, double y, t_vars *vars)
 {
 	int map_x;
 	int map_y;
@@ -50,7 +47,7 @@ int		map_has_wall_at(float x, float y, t_vars *vars)
 	}
 	if (vars->map.map[i] == NULL)
 		return (2);
-	while (vars->map.map[i] && vars->map.map[i][j] != '\0')
+	while (vars->map.map[i][j] != '\0')
 	{
 		if (j == map_x)
 			break;
@@ -66,13 +63,13 @@ int		map_has_wall_at(float x, float y, t_vars *vars)
 
 void	player_location(t_vars *vars)
 {
-	float next_x;
-	float next_y;
-	float move_step;
+	double next_x;
+	double next_y;
+	double move_step;
 	move_step = vars->player.walk_direction * vars->player.walk_speed;
 	vars->player.rotation_angle += vars->player.turn_direction * vars->player.turn_speed;
-	next_x = vars->player.x + cosf(vars->player.rotation_angle) * move_step;
-	next_y = vars->player.y + sinf(vars->player.rotation_angle) * move_step;
+	next_x = vars->player.x + cos(vars->player.rotation_angle) * move_step;
+	next_y = vars->player.y + sin(vars->player.rotation_angle) * move_step;
 	if (!map_has_wall_at(next_x, next_y, vars))
 	{
 		vars->player.x = next_x;
@@ -84,7 +81,8 @@ void	player_location(t_vars *vars)
 
 int		render_next_frame(t_vars *vars)
 { 
-	ft_rect(0, 0, vars->screen.width, vars->screen.height, 0x00000000, &vars->img);
+	ft_rect(0, 0, vars->screen.width, vars->screen.height / 2, vars->map.ceil_color, &vars->img);
+	ft_rect(0, vars->screen.height / 2, vars->screen.width, vars->screen.height / 2, vars->map.floor_color, &vars->img);
 	player_location(vars);
 	cast_rays(vars);
 	render_walls(vars);
@@ -132,7 +130,7 @@ int		main(int argc, char **argv)
 		return (-1);
 //TODO: invalid num of arguments
 	setup(&vars, argv[1]);
-//	mlx_loop_hook(vars.screen.mlx, render_next_frame, &vars);
+	render_next_frame(&vars);
 	mlx_hook(vars.screen.win, 2, 1L<<0, key_pressed, &vars);
 	mlx_hook(vars.screen.win, 3, 1L<<1, key_released, &vars);
 	mlx_loop(vars.screen.mlx);
