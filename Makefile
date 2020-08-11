@@ -1,6 +1,6 @@
 NAME = cub3D
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra 
+CFLAGS = #-Wall -Werror -Wextra 
 
 MLX_DIR = ./minilibx-linux
 MLX_FLAGS = -L $(MLX_DIR) -lmlx -L /usr/include/../lib -lXext -lX11 -lm -lbsd 

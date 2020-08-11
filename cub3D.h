@@ -35,10 +35,12 @@ typedef struct	s_ray
 {
 	double		ray_angle;
 	double		distance;
-	int			is_ray_facing_up;
-	int			is_ray_facing_down;
-	int			is_ray_facing_left;
-	int			is_ray_facing_right;
+	double		hit_x;
+	double		hit_y;
+	int			is_up;
+	int			is_down;
+	int			is_left;
+	int			is_right;
 	int			is_vertical_hit;
 }				t_ray[1920];
 
@@ -50,10 +52,8 @@ typedef struct  s_ray_utils
 	double		y_step;
 	double		next_x;
 	double		next_y;
-	double		check_x;
-	double		check_y;
-	double		hit_wall_x;
-	double		hit_wall_y;
+	double		hit_x;
+	double		hit_y;
 	double		distance;
 }				t_ray_utils;
 
@@ -104,7 +104,8 @@ typedef struct	s_vars
 	t_screen	screen;
 }				t_vars;
 
-int		map_has_wall_at(double x, double y, t_vars *vars);
+void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
+int		is_wall(double x, double y, t_vars *vars);
 void	parser(char *path, t_vars *vars);
 void	parse_map(t_vars *vars, t_list **list);
 void	setup(t_vars *vars, char *path);

@@ -26,7 +26,7 @@ void	ft_rect(int x, int y, int width, int height, int color, t_img *img)
 	}
 }
 
-int		map_has_wall_at(double x, double y, t_vars *vars)
+int		is_wall(double x, double y, t_vars *vars)
 {
 	int map_x;
 	int map_y;
@@ -68,12 +68,12 @@ void	player_location(t_vars *vars)
 	double move_step;
 	move_step = vars->player.walk_direction * vars->player.walk_speed;
 	vars->player.rotation_angle += vars->player.turn_direction * vars->player.turn_speed;
-	next_x = vars->player.x + cos(vars->player.rotation_angle) * move_step;
-	next_y = vars->player.y + sin(vars->player.rotation_angle) * move_step;
-	if (!map_has_wall_at(next_x, next_y, vars))
+	next_x = vars->player.x + cos(vars->player.rotation_angle) * move_step * 3;
+	next_y = vars->player.y + sin(vars->player.rotation_angle) * move_step * 3;
+	if (!is_wall(next_x, next_y, vars))
 	{
-		vars->player.x = next_x;
-		vars->player.y = next_y;
+		vars->player.x = vars->player.x + cos(vars->player.rotation_angle) * move_step;
+		vars->player.y = vars->player.y + sin(vars->player.rotation_angle) * move_step;
 	}
 	vars->player.turn_direction = 0;
 	vars->player.walk_direction = 0;
