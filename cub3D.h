@@ -1,24 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3D.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/15 15:36:14 by mtriston          #+#    #+#             */
+/*   Updated: 2020/08/15 16:16:20 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB3D_H
 # define CUB3D_H
-
-#include <mlx.h>
-#include <math.h>
-#include <fcntl.h>
-#include "ft_printf/ft_printf.h"
-#include "get_next_line/get_next_line.h"
-#include <stdio.h> //TODO: delete
-#include <limits.h>
-#define FALSE 0
-#define TRUE 1
-
-#define MINIMAP_SCALE 0.3f
-
-#define FOV_ANGLE 60 * (M_PI / 180) 
-
-#define LEFT_ARROW 65361
-#define UP_ARROW 65362
-#define RIGHT_ARROW 65363
-#define DOWN_ARROW 65364
+# include <mlx.h>
+# include <math.h>
+# include <fcntl.h>
+# include "./libft/libft.h"
+# include <stdio.h> //TODO: delete
+# include <limits.h>
+# define FALSE 0
+# define TRUE 1
+# define MINIMAP_SCALE 0.3f
+# define FOV_ANGLE 60 * (M_PI / 180)
+# define LEFT_ARROW 65361
+# define UP_ARROW 65362
+# define RIGHT_ARROW 65363
+# define DOWN_ARROW 65364
 
 typedef struct	s_player
 {
@@ -44,7 +51,7 @@ typedef struct	s_ray
 	int			is_vertical_hit;
 }				t_ray[1920];
 
-typedef struct  s_ray_utils
+typedef struct	s_ray_utils
 {
 	double		x_intercept;
 	double		y_intercept;
@@ -76,13 +83,19 @@ typedef struct	s_map
 	int			ceil_color;
 }				t_map;
 
+typedef struct	s_sprite
+{
+	t_img		img;
+	double		x;
+	double		y;
+}				t_sprite;
+
 typedef struct	s_texture
 {
 	t_img		north;
 	t_img		south;
 	t_img		west;
 	t_img		east;
-	t_img		sprite;
 }				t_texture;
 
 typedef struct	s_screen
@@ -101,10 +114,12 @@ typedef struct	s_vars
 	t_img		img;
 	t_map		map;
 	t_texture	texture;
+	t_sprite	sprite;
 	t_screen	screen;
 }				t_vars;
 
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
+double	normalize_angle(double angle);
 int		is_wall(double x, double y, t_vars *vars);
 void	parser(char *path, t_vars *vars);
 void	parse_map(t_vars *vars, t_list **list);
