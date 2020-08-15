@@ -1,16 +1,16 @@
 #include "../cub3D.h"
 
-static void	search_player(char *str, int x, t_player *player)
+static void	search_unit(char *str, int x, t_player *player, t_sprite *sprite)
 {
 	int y;
 
 	y = 0;
-	if (player->rotation_angle != -1 || player->x != 0 || player->y != 0)
-		return ;//TODO: two players, error
 	while (str[y] != '\0')
 	{
 		if (str[y] == 'N' || str[y] == 'S' || str[y] == 'W' || str[y] == 'E')
 		{
+			if (player->rotation_angle != -1 || player->x != 0 || player->y != 0)
+				return ;//TODO: two players, error
 			player->x = y;
 			player->y = x;
 			if (str[y] == 'N')
@@ -21,7 +21,11 @@ static void	search_player(char *str, int x, t_player *player)
 				player->rotation_angle = M_PI;
 			else if (str[y] == 'E')
 				player->rotation_angle = 0;
-			return ;
+		}
+		if (str[y] == '2')
+		{
+			sprite->x = y;
+			sprite->y = x;
 		}
 		y++;
 	}
@@ -38,7 +42,7 @@ static void	validate_line(char *line)
 		return ;//TODO error open right wall
 	while (*line != '\0')
 	{
-		if (!ft_strchr(allow_char, *line))
+		if (!ft_strchr(allow_char, *line)) //FIX
 			return ;//TODO: error forbidden char
 		line++;
 	}
@@ -61,7 +65,7 @@ void		parse_map(t_vars *vars, t_list **list)
 	while (ptr)
 	{
 		validate_line(ptr->content);
-		search_player(ptr->content, i, &vars->player);
+		search_unit(ptr->content, i, &vars->player, &vars->sprite);
 		vars->map.map[i++] = ptr->content;
 		max_len = max_len < (int)ft_strlen(ptr->content) \
 		? (int)ft_strlen(ptr->content) : max_len;
@@ -72,4 +76,6 @@ void		parse_map(t_vars *vars, t_list **list)
 	? vars->screen.width / max_len : vars->screen.height / max_len;
 	vars->player.x *= vars->map.tile_size;
 	vars->player.y *= vars->map.tile_size;
+	vars->sprite.x *= vars->map.tile_size;
+	vars->sprite.y *= vars->map.tile_size;
 }

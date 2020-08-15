@@ -56,7 +56,7 @@ static void	write_path_to_file(char *str, t_vars *vars, char type)
 	if (type == 'E')
 		import_texture(str, &vars->texture.east, vars->screen.mlx);
 	if (type == 's')
-		import_texture(str, &vars->texture.sprite, vars->screen.mlx);
+		import_texture(str, &vars->sprite.img, vars->screen.mlx);
 }
 
 static void	parse_parameters(t_list **list, t_vars *vars)
