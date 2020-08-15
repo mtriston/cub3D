@@ -55,10 +55,10 @@ int		is_wall(double x, double y, t_vars *vars)
 	}
 	if (vars->map.map[i][j] == '\0')
 		return (2);
-	if (i != map_y || j != map_x)
+	if (i != map_y || j != map_x || vars->map.map[i][j] == ' ')
 		return (2);
 	
-	return (vars->map.map[map_y][map_x] != '0');
+	return (vars->map.map[map_y][map_x] == '1');
 }
 
 void	player_location(t_vars *vars)
