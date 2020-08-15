@@ -1,6 +1,3 @@
 cub3D
-libft
-ft_printf
-get_next_line
-minilibx-linux
 */*.o
+.vscode
