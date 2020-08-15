@@ -18,6 +18,8 @@ void	draw_minimap(t_vars *vars)
 		{
 			if (vars->map.map[i][j] == '1')
 				color = 0x00000000;
+			else if (vars->map.map[i][j] == '2')
+				color = 0x0000FF00;
 			else
 				color = 0xFFFFFFFF;
 			if (vars->map.map[i][j] != ' ')
