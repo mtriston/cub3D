@@ -1,14 +1,11 @@
 NAME = cub3D
 CC = gcc
-CFLAGS = #-Wall -Werror -Wextra 
+CFLAGS = -Wall -Werror -Wextra 
 
 MLX_DIR = ./minilibx-linux
 MLX_FLAGS = -L $(MLX_DIR) -lmlx -L /usr/include/../lib -lXext -lX11 -lm -lbsd 
-LIBFT = ./ft_printf/libftprintf.a
-LIBFT_DIR = ./ft_printf
-GET_NEXT_LINE = get_next_line/get_next_line.c \
-get_next_line/get_next_line_utils.c
-
+LIBFT = ./libft/libft.a
+LIBFT_DIR = ./libft
 
 HEADER = cub3D.h
 
@@ -23,7 +20,6 @@ SRC = cub3D          \
 	  color          \
 
 ADD = $(addsuffix .c, $(addprefix src/, $(SRC)))
-ADD += $(GET_NEXT_LINE)
 
 OBJ = $(ADD:.c=.o)
 
