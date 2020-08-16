@@ -36,7 +36,7 @@ static t_ray_utils	find_vertical_interception(t_vars *vars, t_ray ray)
 	while (vert.next_x >= 0 && vert.next_x <= vars->screen.width \
 		&& vert.next_y >= 0 && vert.next_y <= vars->screen.height)
 	{
-		if (is_wall(vert.next_x - (ray->is_left ? 1 : 0), vert.next_y, vars))
+		if (is_wall(vert.next_x - (ray->is_left ? 1 : 0), vert.next_y, vars) == TRUE)
 		{
 			vert.distance = calc_distance(vars->player.x, vert.next_x, vars->player.y, vert.next_y);
 			return (vert);
@@ -70,7 +70,7 @@ static t_ray_utils	find_horizontal_interception(t_vars *vars, t_ray ray)
 	while (horz.next_x >= 0 && horz.next_x <= vars->screen.width \
 		&& horz.next_y >= 0 && horz.next_y <= vars->screen.height)
 	{
-		if (is_wall(horz.next_x, horz.next_y - (ray->is_up ? 1 : 0), vars))
+		if (is_wall(horz.next_x, horz.next_y - (ray->is_up ? 1 : 0), vars) == TRUE)
 		{ 	
 			horz.distance = calc_distance(vars->player.x, horz.next_x, vars->player.y, horz.next_y);
 			return (horz);
