@@ -1,18 +1,26 @@
 #include "../cub3D.h"
 
-static void	write_resolution(char *str, t_screen *screen)
+static void	write_resolution(char *str, t_vars *vars)
 {
-	if (screen->width != 0 || screen->height != 0)
-		return ;
-	//TODO: exit
+	int m_w;
+	int m_h;
+
+	mlx_get_screen_size(vars->screen.mlx, &m_w, &m_h);
+	if (vars->screen.width != 0 || vars->screen.height != 0)
+		ft_error("More then one resolution's configuration");
 	str = ft_strchr(str, 'R');
 	str++;
-	screen->width = ft_atoi(str);
+	vars->screen.width = ft_atoi(str);
 	while (*str && ft_isspace(*str))
 		str++;
 	while (*str && ft_isdigit(*str))
 		str++;
-	screen->height = ft_atoi(str);
+	vars->screen.height = ft_atoi(str);
+	if (vars->screen.width <= 0 || vars->screen.height <= 0)
+		ft_error("Invalid resolution");
+	vars->screen.width = vars->screen.width > m_w ? m_w : vars->screen.width;
+	vars->screen.height = \
+						vars->screen.height > m_h ? m_h : vars->screen.height;
 }
 
 static void	write_color(char *str, t_map *map, char type)
@@ -20,14 +28,13 @@ static void	write_color(char *str, t_map *map, char type)
 	int		c1;
 	int		c2;
 	int		c3;
-	
+	//TODO: add check error
 	str = ft_strchr(str, type);
 	str++;
 	while (*str && ft_isspace(*str))
 		str++;
 	c1 = ft_atoi(++str);
 	str = ft_strchr(str, ',');
-//TODO: exit
 	c2 = ft_atoi(++str);
 	str = ft_strchr(str, ',');
 	c3 = ft_atoi(++str);
@@ -56,7 +63,7 @@ static void	write_path_to_file(char *str, t_vars *vars, char type)
 	if (type == 'E')
 		import_texture(str, &vars->texture.east, vars->screen.mlx);
 	if (type == 's')
-		import_texture(str, &vars->sprite.img, vars->screen.mlx);
+		import_texture(str, &vars->texture.sprite, vars->screen.mlx);
 }
 
 static void	parse_parameters(t_list **list, t_vars *vars)
@@ -69,7 +76,7 @@ static void	parse_parameters(t_list **list, t_vars *vars)
 	{
 		len = ft_strlen(ptr->content);
 		if (ft_strnstr(ptr->content, "R ", len))
-			write_resolution(ptr->content, &vars->screen);
+			write_resolution(ptr->content, vars);
 		else if (ft_strnstr(ptr->content, "NO ", len))
 			write_path_to_file(ptr->content, vars, 'N');
 		else if (ft_strnstr(ptr->content, "SO ", len))
@@ -93,15 +100,23 @@ void		parser(char *path, t_vars *vars)
 	int		fd;
 	char	*line;
 	t_list	*head;
+	t_list	*ptr;
+	int		ret;
 	
 	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		ft_error("Invalid *.cub file");
 	head = NULL;
-	while (get_next_line(fd, &line))
+	while ((ret = get_next_line(fd, &line)) > 0)
 	{
-		ft_lstadd_back(&head, ft_lstnew(line));
+		if (!(ptr = ft_lstnew(line)))
+			ft_error("Memory allocation failed");
+		ft_lstadd_back(&head, ptr);
 	}
-	ft_lstadd_back(&head, ft_lstnew(line));
+	if (!(ptr = ft_lstnew(line)))
+		ft_error("Memory allocation failed");
+	ft_lstadd_back(&head, ptr);
 	close(fd);
 	parse_parameters(&head, vars);
-	parse_map(vars, &head);
+	parse_map(vars, head);
 }

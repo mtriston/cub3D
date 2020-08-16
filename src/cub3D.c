@@ -55,7 +55,7 @@ int		is_wall(double x, double y, t_vars *vars)
 	}
 	if (vars->map.map[i][j] == '\0')
 		return (2);
-	if (i != map_y || j != map_x || vars->map.map[i][j] == ' ')
+	if (i != map_y || j != map_x || vars->map.map[i][j] == ' ' || vars->map.map[i][j] == '2')
 		return (2);
 	
 	return (vars->map.map[map_y][map_x] == '1');
@@ -68,8 +68,8 @@ void	player_location(t_vars *vars)
 	double move_step;
 	move_step = vars->player.walk_direction * vars->player.walk_speed;
 	vars->player.rotation_angle += vars->player.turn_direction * vars->player.turn_speed;
-	next_x = vars->player.x + cos(vars->player.rotation_angle) * move_step * 3;
-	next_y = vars->player.y + sin(vars->player.rotation_angle) * move_step * 3;
+	next_x = vars->player.x + cos(vars->player.rotation_angle) * move_step * 2;
+	next_y = vars->player.y + sin(vars->player.rotation_angle) * move_step * 2;
 	if (!is_wall(next_x, next_y, vars))
 	{
 		vars->player.x = vars->player.x + cos(vars->player.rotation_angle) * move_step;
@@ -81,11 +81,14 @@ void	player_location(t_vars *vars)
 
 int		render_next_frame(t_vars *vars)
 { 
-	ft_rect(0, 0, vars->screen.width, vars->screen.height / 2, vars->map.ceil_color, &vars->img);
-	ft_rect(0, vars->screen.height / 2, vars->screen.width, vars->screen.height / 2, vars->map.floor_color, &vars->img);
+	ft_rect(0, 0, vars->screen.width, vars->screen.height / 2, \
+											vars->map.ceil_color, &vars->img);
+	ft_rect(0, vars->screen.height / 2, vars->screen.width, \
+				vars->screen.height / 2, vars->map.floor_color, &vars->img);
 	player_location(vars);
 	cast_rays(vars);
 	render_walls(vars);
+	sprite(vars);
 	draw_minimap(vars);
 	ft_rect((int)(vars->player.x * MINIMAP_SCALE),	(int)(vars->player.y * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), (int)(vars->map.tile_size / 2 * MINIMAP_SCALE), 0x00FF0000, &vars->img);
 	mlx_put_image_to_window(vars->screen.mlx, vars->screen.win, vars->img.img, 0, 0);
@@ -126,9 +129,8 @@ int		key_released(int keycode, t_vars *vars)
 int		main(int argc, char **argv)
 {
 	t_vars	vars;
-	if (argc != 2)
-		return (-1);
-//TODO: invalid num of arguments
+	if (argc == 1)
+		ft_error("Missing *.cub file");
 	setup(&vars, argv[1]);
 	render_next_frame(&vars);
 	mlx_hook(vars.screen.win, 2, 1L<<0, key_pressed, &vars);
