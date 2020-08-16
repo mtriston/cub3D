@@ -1,81 +1,96 @@
 #include "../cub3D.h"
 
-static void	search_unit(char *str, int x, t_player *player, t_sprite *sprite)
+static void	setup_player(char side, int x, int y, t_vars *vars)
 {
+
+	if (vars->player.rotation_angle != -1 || vars->player.x != 0 || \
+												vars->player.y != 0)
+		exit(MORE_THEN_ONE_PLAYER);
+	vars->player.x = x;
+	vars->player.y = y;
+	if (side == 'N')
+		vars->player.rotation_angle = M_PI/ 2;
+	else if (side == 'S')
+		vars->player.rotation_angle = 3 * M_PI/ 2;
+	else if (side == 'W')
+		vars->player.rotation_angle = M_PI;
+	else if (side == 'E')
+		vars->player.rotation_angle = 0;
+}
+
+static void setup_sprites(t_vars *vars)
+{
+	int i;
+	int x;
 	int y;
 
 	y = 0;
-	while (str[y] != '\0')
+	i = 0;
+	vars->sprite = malloc_gc(sizeof(t_sprite) * (vars->map.sprites + 1));
+	if (vars->sprite == NULL)
+		ft_error("Memory allocation for sprites failed");
+	while (vars->map.map[y])
 	{
-		if (str[y] == 'N' || str[y] == 'S' || str[y] == 'W' || str[y] == 'E')
+		x = 0;
+		while (vars->map.map[y][x])
 		{
-			if (player->rotation_angle != -1 || player->x != 0 || player->y != 0)
-				return ;//TODO: two players, error
-			player->x = y;
-			player->y = x;
-			if (str[y] == 'N')
-				player->rotation_angle = M_PI/ 2;
-			else if (str[y] == 'S')
-				player->rotation_angle = 3 * M_PI/ 2;
-			else if (str[y] == 'W')
-				player->rotation_angle = M_PI;
-			else if (str[y] == 'E')
-				player->rotation_angle = 0;
-		}
-		if (str[y] == '2')
-		{
-			sprite->x = y;
-			sprite->y = x;
+			if (vars->map.map[y][x] == '2')
+			{
+				vars->sprite[i].x = (x + 0.5) * vars->map.tile_size;
+				vars->sprite[i].y = (y + 0.5) * vars->map.tile_size;
+				i++;
+			}
+			x++;
 		}
 		y++;
 	}
 }
 
-static void	validate_line(char *line)
+static void	parse_line(char *str, int y, t_vars *vars)
 {
-	char	*allow_char;
+	int x;
 
-	allow_char = "012NSWE";
-	if (ft_atoi(line) == 0)
-		return ;//TODO error blank line;
-	if (ft_atoi(line) % 10 != 1)
-		return ;//TODO error open right wall
-	while (*line != '\0')
+	x = 0;
+	while (str[x] != '\0')
 	{
-		if (!ft_strchr(allow_char, *line)) //FIX
-			return ;//TODO: error forbidden char
-		line++;
+		if (ft_atoi(str) == 0)
+			ft_error("Invalid map");
+		if (str[x] == 'N' || str[x] == 'S' || str[x] == 'W' || str[x] == 'E')
+			setup_player(str[x], x, y, vars);
+		else if (str[x] == '2')
+			vars->map.sprites++;
+		else if (str[x] != '0' && str[x] != '1' && str[x] != ' ')
+			ft_error("Invalid map: Forbidden symbols");
+		x++;
 	}
 }
 
-void		parse_map(t_vars *vars, t_list **list)
+void		parse_map(t_vars *vars, t_list *ptr)
 {
-	t_list	*ptr;
-	int		i;
-	int		max_len;
+	size_t	i;
+	size_t	max;
 
-	ptr = *list;
 	i = 0;
-	max_len = 0;
+	max = 0;
 	while (ptr && ft_atoi(ptr->content) == 0)
 		ptr = ptr->next;
-	vars->map.map = (char **)malloc(sizeof(char *) * (ft_lstsize(ptr) + 1));
+	if (ft_lstsize(ptr) < 3)
+		ft_error("Invalid size of map");
+	vars->map.map = (char **)malloc_gc(sizeof(char *) * (ft_lstsize(ptr) + 1));
 	if (vars->map.map == NULL)
-		return ;//TODO: exit
+		ft_error("Memory allocated for map failed");
 	while (ptr)
 	{
-		validate_line(ptr->content);
-		search_unit(ptr->content, i, &vars->player, &vars->sprite);
+		parse_line(ptr->content, i, vars);
 		vars->map.map[i++] = ptr->content;
-		max_len = max_len < (int)ft_strlen(ptr->content) \
-		? (int)ft_strlen(ptr->content) : max_len;
+		max = max < ft_strlen(ptr->content) ? ft_strlen(ptr->content) : max;
 		ptr = ptr->next;
 	}
 	vars->map.map[i] = NULL;
-	vars->map.tile_size = vars->screen.width < vars->screen.height \
-	? vars->screen.width / max_len : vars->screen.height / max_len;
+	max = max < i ? i : max;
+	vars->map.tile_size = vars->screen.height > vars->screen.width ? \
+	vars->screen.height / max : vars->screen.width / max;
 	vars->player.x *= vars->map.tile_size;
 	vars->player.y *= vars->map.tile_size;
-	vars->sprite.x *= vars->map.tile_size;
-	vars->sprite.y *= vars->map.tile_size;
+	setup_sprites(vars);
 }
