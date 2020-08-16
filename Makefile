@@ -12,11 +12,13 @@ HEADER = cub3D.h
 SRC = cub3D          \
       parser         \
 	  parse_map      \
+	  error			 \
 	  setup			 \
 	  draw_minimap   \
 	  render		 \
 	  texture        \
 	  raycast        \
+	  sprite		 \
 	  color          \
 
 ADD = $(addsuffix .c, $(addprefix src/, $(SRC)))
