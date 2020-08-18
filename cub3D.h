@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/15 15:36:14 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/16 19:25:25 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/18 20:56:59 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,11 @@
 # define FOV_ANGLE 60 * (M_PI / 180)
 
 # define LEFT_ARROW 65361
-# define UP_ARROW 65362
 # define RIGHT_ARROW 65363
-# define DOWN_ARROW 65364
-
-# define MISSING_MAP_FILE 1
-# define INVALID_MAP 2
-# define MORE_THEN_ONE_PLAYER 3
+# define W_KEY 119
+# define D_KEY 100
+# define S_KEY 115
+# define A_KEY 97
 
 typedef struct	s_player
 {
@@ -41,6 +39,7 @@ typedef struct	s_player
 	double		y;
 	int			turn_direction;
 	int			walk_direction;
+	int			sideways;
 	double		rotation_angle;
 	double		walk_speed;
 	double		turn_speed;

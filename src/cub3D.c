@@ -66,21 +66,27 @@ void	player_location(t_vars *vars)
 	double next_x;
 	double next_y;
 	double move_step;
+	double sideways;
+
+	sideways = vars->player.sideways ? M_PI / 2 * vars->player.walk_direction : 0;
 	move_step = vars->player.walk_direction * vars->player.walk_speed;
+	move_step = vars->player.sideways && move_step < 0 ? -move_step : move_step;
 	vars->player.rotation_angle += vars->player.turn_direction * vars->player.turn_speed;
-	next_x = vars->player.x + cos(vars->player.rotation_angle) * move_step * 2;
-	next_y = vars->player.y + sin(vars->player.rotation_angle) * move_step * 2;
+	next_x = vars->player.x + cos(vars->player.rotation_angle - sideways) * move_step * 2;
+	next_y = vars->player.y + sin(vars->player.rotation_angle - sideways) * move_step * 2;
 	if (!is_wall(next_x, next_y, vars))
 	{
-		vars->player.x = vars->player.x + cos(vars->player.rotation_angle) * move_step;
-		vars->player.y = vars->player.y + sin(vars->player.rotation_angle) * move_step;
+		vars->player.x = vars->player.x + cos(vars->player.rotation_angle - sideways) * move_step;
+		vars->player.y = vars->player.y + sin(vars->player.rotation_angle - sideways) * move_step;
 	}
 	vars->player.turn_direction = 0;
 	vars->player.walk_direction = 0;
+	vars->player.sideways = 0;
 }
 
 int		render_next_frame(t_vars *vars)
-{ 
+{
+	mlx_do_sync(vars->screen.mlx);
 	ft_rect(0, 0, vars->screen.width, vars->screen.height / 2, \
 											vars->map.ceil_color, &vars->img);
 	ft_rect(0, vars->screen.height / 2, vars->screen.width, \
@@ -98,15 +104,24 @@ int		render_next_frame(t_vars *vars)
 
 int		key_pressed(int keycode, t_vars *vars)
 {
-
 	if (keycode == LEFT_ARROW)
 		vars->player.turn_direction = -1;
-	else if (keycode == UP_ARROW)
-		vars->player.walk_direction = 1; 
 	else if (keycode == RIGHT_ARROW)
 		vars->player.turn_direction = 1;
-	else if (keycode == DOWN_ARROW)
-		vars->player.walk_direction = -1; 
+	else if (keycode == W_KEY)
+		vars->player.walk_direction = 1;
+	else if (keycode == S_KEY)
+		vars->player.walk_direction = -1;
+	else if (keycode == D_KEY)
+	{
+		vars->player.walk_direction = -1;
+		vars->player.sideways = TRUE;
+	}
+	else if (keycode == A_KEY)
+	{
+		vars->player.walk_direction = 1;
+		vars->player.sideways = TRUE;
+	}
 	render_next_frame(vars);
 	return (1);
 }
@@ -116,12 +131,22 @@ int		key_released(int keycode, t_vars *vars)
 
 	if (keycode == LEFT_ARROW)
 		vars->player.turn_direction = 0;
-	else if (keycode == UP_ARROW)
-		vars->player.walk_direction = 0; 
 	else if (keycode == RIGHT_ARROW)
 		vars->player.turn_direction = 0;
-	else if (keycode == DOWN_ARROW)
-		vars->player.walk_direction = 0; 
+	else if (keycode == W_KEY)
+		vars->player.walk_direction = 0;
+	else if (keycode == S_KEY)
+		vars->player.walk_direction = 0;
+	else if (keycode == D_KEY)
+	{
+		vars->player.walk_direction = 0;
+		vars->player.sideways = FALSE;
+	}
+	else if (keycode == A_KEY)
+	{
+		vars->player.walk_direction = 0;
+		vars->player.sideways = FALSE;
+	}
 	render_next_frame(vars);
 	return (1);
 }
