@@ -6,34 +6,35 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/19 22:08:27 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/20 22:21:29 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/22 22:17:47 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../cub3D.h"
-#include "../bitmap.h"
+#include "../includes/cub3D.h"
+#include "../includes/bitmap.h"
 
-t_bmp_file_header   file_header(t_vars *vars)
+t_bmp_file_header	file_header(t_cub *cub)
 {
 	t_bmp_file_header bfh;
 
 	bfh.type = 0x4D42;
 	bfh.size = sizeof(t_bmp_file_header) + sizeof(t_bmp_info_header) + \
-				vars->screen.width * vars->screen.height * 4;
+				cub->frame.w * cub->frame.h * 4;
 	bfh.reserved1 = 0;
 	bfh.reserved2 = 0;
 	bfh.off_bits = sizeof(t_bmp_file_header) + sizeof(t_bmp_info_header);
 	return (bfh);
 }
 
-t_bmp_info_header   info_header(t_vars *vars)
+t_bmp_info_header	info_header(t_cub *cub)
 {
 	t_bmp_info_header bih;
+
 	bih.size = 40;
-	bih.width = vars->screen.width;
-	bih.height = vars->screen.height * (-1);
+	bih.width = cub->frame.w;
+	bih.height = cub->frame.h * (-1);
 	bih.planes = 1;
-	bih.bit_count = vars->img.bits_per_pixel;
+	bih.bit_count = cub->img.bpp;
 	bih.compression = 0;
 	bih.size_image = 0;
 	bih.x_pels_per_meter = 0;
@@ -42,20 +43,23 @@ t_bmp_info_header   info_header(t_vars *vars)
 	bih.clr_important = 0;
 	return (bih);
 }
-void bitmap(t_vars *vars) {
 
-	int fd;
-	t_bmp_file_header bfh;
-	t_bmp_info_header bih;
+void				bitmap(t_cub *cub)
+{
+	int					fd;
+	t_bmp_file_header	bfh;
+	t_bmp_info_header	bih;
 
 	fd = open("screenshot.bmp", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
-	bfh = file_header(vars);
-	bih = info_header(vars);
+	bfh = file_header(cub);
+	bih = info_header(cub);
 	if (!write(fd, &bfh, sizeof(bfh)))
-		ft_exit("file header error", vars);
+		ft_exit("file header error", cub);
 	if (!write(fd, &bih, sizeof(bih)))
-		ft_exit("info header error", vars);
-	if (!write(fd, vars->img.addr, vars->screen.width * vars->screen.height * 4))
-		ft_exit("bitmap data error", vars);
+		ft_exit("info header error", cub);
+	if (!write(fd, cub->img.addr, \
+								cub->frame.w * cub->frame.h * 4))
+		ft_exit("bitmap data error", cub);
 	close(fd);
+	ft_exit("Screenshot has been saved", cub);
 }
