@@ -12,9 +12,9 @@
 
 #include "../cub3D.h"
 
-static void calc_sprite_parameters(t_vars *vars)
+static void     calc_sprite_parameters(t_vars *vars)
 {
-    int i;
+	int i;
 
     i = 0;
     while (i < vars->map.sprites)
@@ -86,7 +86,7 @@ static void render_sprite(t_vars *vars)
 			{	
 				if (y_offset + j > vars->screen.height || y_offset + i < 0)
 				continue;
-				int tex_y = (int)tex_pos & (vars->texture.sprite.height - 1);
+				int tex_y = (unsigned int)tex_pos & (vars->texture.sprite.height - 1);
 				char *color = vars->texture.sprite.addr + (tex_y * vars->texture.sprite.line_length + tex_x * (vars->texture.sprite.bits_per_pixel / 8));
 				tex_pos += step;
 				if (*(unsigned int *)color == 0x00000000)
@@ -98,7 +98,7 @@ static void render_sprite(t_vars *vars)
 	}
 }
 
-void    sprite(t_vars *vars)
+void        sprite(t_vars *vars)
 {
     calc_sprite_parameters(vars);
     sort_sprite(vars);

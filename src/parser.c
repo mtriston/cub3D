@@ -7,7 +7,7 @@ static void	write_resolution(char *str, t_vars *vars)
 
 	mlx_get_screen_size(vars->screen.mlx, &m_w, &m_h);
 	if (vars->screen.width != 0 || vars->screen.height != 0)
-		ft_error("More then one resolution's configuration");
+		ft_exit("More then one resolution's configuration", vars);
 	str = ft_strchr(str, 'R');
 	str++;
 	vars->screen.width = ft_atoi(str);
@@ -17,7 +17,7 @@ static void	write_resolution(char *str, t_vars *vars)
 		str++;
 	vars->screen.height = ft_atoi(str);
 	if (vars->screen.width <= 0 || vars->screen.height <= 0)
-		ft_error("Invalid resolution");
+		ft_exit("Invalid resolution", vars);
 	vars->screen.width = vars->screen.width > m_w ? m_w : vars->screen.width;
 	vars->screen.height = \
 						vars->screen.height > m_h ? m_h : vars->screen.height;
@@ -55,15 +55,15 @@ static void	write_path_to_file(char *str, t_vars *vars, char type)
 	if (temp)
 		*temp = '\0';
 	if (type == 'N')
-		import_texture(str, &vars->texture.north, vars->screen.mlx);
+		import_texture(str, &vars->texture.north, vars);
 	if (type == 'S')
-		import_texture(str, &vars->texture.south, vars->screen.mlx);
+		import_texture(str, &vars->texture.south, vars);
 	if (type == 'W')
-		import_texture(str, &vars->texture.west, vars->screen.mlx);
+		import_texture(str, &vars->texture.west, vars);
 	if (type == 'E')
-		import_texture(str, &vars->texture.east, vars->screen.mlx);
+		import_texture(str, &vars->texture.east, vars);
 	if (type == 's')
-		import_texture(str, &vars->texture.sprite, vars->screen.mlx);
+		import_texture(str, &vars->texture.sprite, vars);
 }
 
 static void	parse_parameters(t_list **list, t_vars *vars)
@@ -102,19 +102,22 @@ void		parser(char *path, t_vars *vars)
 	t_list	*head;
 	t_list	*ptr;
 	int		ret;
-	
+	if (!path)
+		return ;
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
-		ft_error("Invalid *.cub file");
+		ft_exit("Invalid *.cub file", vars);
 	head = NULL;
 	while ((ret = get_next_line(fd, &line)) > 0)
 	{
 		if (!(ptr = ft_lstnew(line)))
-			ft_error("Memory allocation failed");
+			ft_exit("Memory allocation failed", vars);
 		ft_lstadd_back(&head, ptr);
 	}
+	if (ret == -1)
+	    ft_exit("get_next_line error", vars);
 	if (!(ptr = ft_lstnew(line)))
-		ft_error("Memory allocation failed");
+		ft_exit("Memory allocation failed", vars);
 	ft_lstadd_back(&head, ptr);
 	close(fd);
 	parse_parameters(&head, vars);

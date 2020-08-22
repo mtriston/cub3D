@@ -5,7 +5,7 @@ static void	setup_player(char side, int x, int y, t_vars *vars)
 
 	if (vars->player.rotation_angle != -1 || vars->player.x != 0 || \
 												vars->player.y != 0)
-		exit(MORE_THEN_ONE_PLAYER);
+		ft_exit("Invalid map: more then one player", vars);
 	vars->player.x = x;
 	vars->player.y = y;
 	if (side == 'N')
@@ -28,7 +28,7 @@ static void setup_sprites(t_vars *vars)
 	i = 0;
 	vars->sprite = malloc_gc(sizeof(t_sprite) * (vars->map.sprites + 1));
 	if (vars->sprite == NULL)
-		ft_error("Memory allocation for sprites failed");
+		ft_exit("Memory allocation for sprites failed", vars);
 	while (vars->map.map[y])
 	{
 		x = 0;
@@ -54,13 +54,13 @@ static void	parse_line(char *str, int y, t_vars *vars)
 	while (str[x] != '\0')
 	{
 		if (ft_atoi(str) == 0)
-			ft_error("Invalid map");
+			ft_exit("Invalid map", vars);
 		if (str[x] == 'N' || str[x] == 'S' || str[x] == 'W' || str[x] == 'E')
 			setup_player(str[x], x, y, vars);
 		else if (str[x] == '2')
 			vars->map.sprites++;
 		else if (str[x] != '0' && str[x] != '1' && str[x] != ' ')
-			ft_error("Invalid map: Forbidden symbols");
+			ft_exit("Invalid map: Forbidden symbols", vars);
 		x++;
 	}
 }
@@ -75,10 +75,10 @@ void		parse_map(t_vars *vars, t_list *ptr)
 	while (ptr && ft_atoi(ptr->content) == 0)
 		ptr = ptr->next;
 	if (ft_lstsize(ptr) < 3)
-		ft_error("Invalid size of map");
+		ft_exit("Invalid size of map", vars);
 	vars->map.map = (char **)malloc_gc(sizeof(char *) * (ft_lstsize(ptr) + 1));
 	if (vars->map.map == NULL)
-		ft_error("Memory allocated for map failed");
+		ft_exit("Memory allocated for map failed", vars);
 	while (ptr)
 	{
 		parse_line(ptr->content, i, vars);

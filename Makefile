@@ -1,6 +1,6 @@
 NAME = cub3D
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra 
+CFLAGS = -Wall -Werror -Wextra -O2 -g
 
 MLX_DIR = ./minilibx-linux
 MLX_FLAGS = -L $(MLX_DIR) -lmlx -L /usr/include/../lib -lXext -lX11 -lm -lbsd 
@@ -20,6 +20,7 @@ SRC = cub3D          \
 	  raycast        \
 	  sprite		 \
 	  color          \
+	  bitmap	     \
 
 ADD = $(addsuffix .c, $(addprefix src/, $(SRC)))
 
@@ -28,7 +29,7 @@ OBJ = $(ADD:.c=.o)
 all: $(NAME)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -g -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJ) $(HEADER)
 	

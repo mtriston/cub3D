@@ -104,6 +104,8 @@ int		render_next_frame(t_vars *vars)
 
 int		key_pressed(int keycode, t_vars *vars)
 {
+	if (keycode == ESC)
+		ft_exit("cub3D was closed.", vars);
 	if (keycode == LEFT_ARROW)
 		vars->player.turn_direction = -1;
 	else if (keycode == RIGHT_ARROW)
@@ -155,9 +157,10 @@ int		main(int argc, char **argv)
 {
 	t_vars	vars;
 	if (argc == 1)
-		ft_error("Missing *.cub file");
+		ft_exit("Missing *.cub file", &vars);
 	setup(&vars, argv[1]);
 	render_next_frame(&vars);
+	bitmap(&vars);
 	mlx_hook(vars.screen.win, 2, 1L<<0, key_pressed, &vars);
 	mlx_hook(vars.screen.win, 3, 1L<<1, key_released, &vars);
 	mlx_loop(vars.screen.mlx);

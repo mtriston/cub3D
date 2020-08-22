@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/15 15:36:14 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/18 20:56:59 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/19 22:56:18 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@
 # define MINIMAP_SCALE 0.3f
 # define FOV_ANGLE 60 * (M_PI / 180)
 
-# define LEFT_ARROW 65361
-# define RIGHT_ARROW 65363
-# define W_KEY 119
-# define D_KEY 100
-# define S_KEY 115
-# define A_KEY 97
+# define ESC			65307
+# define LEFT_ARROW		65361
+# define RIGHT_ARROW	65363
+# define W_KEY			119
+# define D_KEY			100
+# define S_KEY			115
+# define A_KEY			97
 
 typedef struct	s_player
 {
@@ -130,7 +131,8 @@ typedef struct	s_vars
 	t_screen	screen;
 }				t_vars;
 
-void    ft_error(char *message);
+void    bitmap(t_vars *vars);
+void    ft_exit(char *message, t_vars *vars);
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
 double	normalize_angle(double angle);
 int		is_wall(double x, double y, t_vars *vars);
@@ -141,7 +143,7 @@ void	draw_minimap(t_vars *vars);
 void	ft_rect(int x, int y, int width, int height, int color, t_img *img);
 void	cast_rays(t_vars *vars);
 void	render_walls(t_vars *vars);
-void	import_texture(char *path, t_img *texture, void *mlx);
+void	import_texture(char *path, t_img *texture, t_vars *vars);
 int		create_trgb(int t, int r, int g, int b);
 void    sprite(t_vars *vars);
 int		get_t(int trgb);
