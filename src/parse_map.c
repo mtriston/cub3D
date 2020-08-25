@@ -1,24 +1,35 @@
-#include "../cub3D.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_map.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/25 22:54:41 by mtriston          #+#    #+#             */
+/*   Updated: 2020/08/25 23:05:58 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static void	setup_player(char side, int x, int y, t_vars *vars)
+#include "../includes/cub3D.h"
+
+static void	setup_player(char side, int x, int y, t_cub *cub)
 {
-
-	if (vars->player.rotation_angle != -1 || vars->player.x != 0 || \
-												vars->player.y != 0)
-		ft_exit("Invalid map: more then one player", vars);
-	vars->player.x = x;
-	vars->player.y = y;
+	if (cub->cam.angle != -1 || cub->cam.x != 0 || \
+												cub->cam.y != 0)
+		ft_exit("More than one player on the map", cub);
+	cub->cam.x = x;
+	cub->cam.y = y;
 	if (side == 'N')
-		vars->player.rotation_angle = M_PI/ 2;
+		cub->cam.angle = M_PI / 2;
 	else if (side == 'S')
-		vars->player.rotation_angle = 3 * M_PI/ 2;
+		cub->cam.angle = 3 * M_PI / 2;
 	else if (side == 'W')
-		vars->player.rotation_angle = M_PI;
+		cub->cam.angle = M_PI;
 	else if (side == 'E')
-		vars->player.rotation_angle = 0;
+		cub->cam.angle = 0;
 }
 
-static void setup_sprites(t_vars *vars)
+static void	setup_sprites(t_cub *cub)
 {
 	int i;
 	int x;
@@ -26,18 +37,18 @@ static void setup_sprites(t_vars *vars)
 
 	y = 0;
 	i = 0;
-	vars->sprite = malloc_gc(sizeof(t_sprite) * (vars->map.sprites + 1));
-	if (vars->sprite == NULL)
-		ft_exit("Memory allocation for sprites failed", vars);
-	while (vars->map.map[y])
+	cub->item = malloc_gc(sizeof(t_item) * (cub->map.items));
+	if (cub->item == NULL)
+		ft_exit("Memory allocation for items failed", cub);
+	while (cub->map.map[y])
 	{
 		x = 0;
-		while (vars->map.map[y][x])
+		while (cub->map.map[y][x])
 		{
-			if (vars->map.map[y][x] == '2')
+			if (cub->map.map[y][x] == '2')
 			{
-				vars->sprite[i].x = (x + 0.5) * vars->map.tile_size;
-				vars->sprite[i].y = (y + 0.5) * vars->map.tile_size;
+				cub->item[i].x = (x + 0.5) * cub->map.tile;
+				cub->item[i].y = (y + 0.5) * cub->map.tile;
 				i++;
 			}
 			x++;
@@ -46,26 +57,46 @@ static void setup_sprites(t_vars *vars)
 	}
 }
 
-static void	parse_line(char *str, int y, t_vars *vars)
+static void	parse_line(char *str, int y, t_cub *cub)
 {
 	int x;
 
 	x = 0;
+	if (ft_atoi(str) == 0)
+		ft_exit("Invalid map", cub);
 	while (str[x] != '\0')
 	{
-		if (ft_atoi(str) == 0)
-			ft_exit("Invalid map", vars);
 		if (str[x] == 'N' || str[x] == 'S' || str[x] == 'W' || str[x] == 'E')
-			setup_player(str[x], x, y, vars);
+			setup_player(str[x], x, y, cub);
 		else if (str[x] == '2')
-			vars->map.sprites++;
+			cub->map.items++;
 		else if (str[x] != '0' && str[x] != '1' && str[x] != ' ')
-			ft_exit("Invalid map: Forbidden symbols", vars);
+			ft_exit("Invalid map: Forbidden symbols", cub);
 		x++;
 	}
 }
 
-void		parse_map(t_vars *vars, t_list *ptr)
+static void	align_map(t_cub *cub, int max)
+{
+	int		i;
+	char	*temp;
+
+	i = 0;
+	while (cub->map.map[i] != NULL)
+	{
+		temp = cub->map.map[i];
+		cub->map.map[i] = malloc_gc(sizeof(char) * max + 1);
+		ft_memset(cub->map.map[i], ' ', max);
+		cub->map.map[i][max] = '\0';
+		ft_memcpy(cub->map.map[i], temp, ft_strlen(temp));
+		free_gc(temp);
+		i++;
+	}
+	cub->map.x = max;
+	cub->map.y = i;
+}
+
+void		parse_map(t_cub *cub, t_list *ptr)
 {
 	size_t	i;
 	size_t	max;
@@ -74,23 +105,22 @@ void		parse_map(t_vars *vars, t_list *ptr)
 	max = 0;
 	while (ptr && ft_atoi(ptr->content) == 0)
 		ptr = ptr->next;
-	if (ft_lstsize(ptr) < 3)
-		ft_exit("Invalid size of map", vars);
-	vars->map.map = (char **)malloc_gc(sizeof(char *) * (ft_lstsize(ptr) + 1));
-	if (vars->map.map == NULL)
-		ft_exit("Memory allocated for map failed", vars);
+	if (!(cub->map.map = malloc_gc(sizeof(char *) * (ft_lstsize(ptr) + 1))))
+		ft_exit("Memory allocated for map failed", cub);
 	while (ptr)
 	{
-		parse_line(ptr->content, i, vars);
-		vars->map.map[i++] = ptr->content;
+		parse_line(ptr->content, i, cub);
+		cub->map.map[i++] = ptr->content;
 		max = max < ft_strlen(ptr->content) ? ft_strlen(ptr->content) : max;
 		ptr = ptr->next;
 	}
-	vars->map.map[i] = NULL;
+	cub->map.map[i] = NULL;
+	align_map(cub, max);
+	validate_map(cub, cub->map.map);
 	max = max < i ? i : max;
-	vars->map.tile_size = vars->screen.height > vars->screen.width ? \
-	vars->screen.height / max : vars->screen.width / max;
-	vars->player.x *= vars->map.tile_size;
-	vars->player.y *= vars->map.tile_size;
-	setup_sprites(vars);
+	cub->map.tile = cub->frame.h > cub->frame.w ? \
+									cub->frame.h / max : cub->frame.w / max;
+	cub->cam.x *= cub->map.tile;
+	cub->cam.y *= cub->map.tile;
+	setup_sprites(cub);
 }
