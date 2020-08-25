@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 20:57:47 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 22:51:51 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/25 22:52:29 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3D.h"
+#include "../includes/cub3d.h"
 
 int		validate_args(int argc, char **argv, t_cub *cub)
 {

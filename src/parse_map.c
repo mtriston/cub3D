@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/25 22:54:41 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 23:05:58 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/25 23:06:44 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3D.h"
+#include "../includes/cub3d.h"
 
 static void	setup_player(char side, int x, int y, t_cub *cub)
 {

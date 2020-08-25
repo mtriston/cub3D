@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/22 22:13:25 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/23 20:49:49 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/25 22:55:29 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3D.h"
+#include "../includes/cub3d.h"
 
 int			ft_close(t_cub *cub)
 {

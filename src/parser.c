@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/25 22:30:40 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 22:32:15 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/25 22:33:53 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3D.h"
+#include "../includes/cub3d.h"
 
 static void	write_resolution(char *str, t_cub *cub)
 {

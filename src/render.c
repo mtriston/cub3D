@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 19:07:30 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/23 20:28:04 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/25 23:33:56 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3D.h"
+#include "../includes/cub3d.h"
 
 static t_img			detect_side(t_cub *cub, t_ray ray)
 {
@@ -79,14 +79,11 @@ static void				render_walls(t_cub *cub)
 int						render_next_frame(t_cub *cub)
 {
 	mlx_do_sync(cub->frame.mlx);
-	ft_rect(0, 0, cub->frame.w, cub->frame.h / 2, \
-											cub->map.c_clr, &cub->img);
-	ft_rect(0, cub->frame.h / 2, cub->frame.w, \
-				cub->frame.h / 2, cub->map.f_clr, &cub->img);
+	ft_rect(0, 0, cub);
+	ft_rect(0, cub->frame.h / 2, cub);
 	player_location(cub);
 	cast_rays(cub);
 	render_walls(cub);
 	render_sprite(cub);
-	draw_minimap(cub);
 	return (1);
 }

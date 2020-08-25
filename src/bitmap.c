@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3D.h"
+#include "../includes/cub3d.h"
 #include "../includes/bitmap.h"
 
 t_bmp_file_header	file_header(t_cub *cub)

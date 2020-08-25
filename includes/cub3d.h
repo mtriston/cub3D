@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/15 15:36:14 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 23:24:46 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/25 23:43:10 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 
 # define FALSE 0
 # define TRUE 1
+# define SPRITE 2
 # define OUT_OF_MAP 3
 
 # define MINIMAP_SCALE 0.3f
@@ -150,12 +151,6 @@ typedef struct		s_cub
 	t_frame			frame;
 }					t_cub;
 
-typedef struct		s_pair
-{
-	int				x;
-	int				y;
-}					t_pair;
-
 int					ft_close(t_cub *cub);
 void				ft_exit(char *message, t_cub *cub);
 int					validate_args(int argc, char **argv, t_cub *cub);
@@ -170,9 +165,7 @@ int					is_wall(double x, double y, t_cub *cub);
 void				parser(char *path, t_cub *cub);
 void				parse_map(t_cub *cub, t_list *list);
 void				setup(t_cub *cub, char *path, int bmp);
-void				draw_minimap(t_cub *cub);
-void				ft_rect(int x, int y, int width, int height, \
-											int color, t_img *img);
+void				ft_rect(int x, int y, t_cub *cub);
 void				cast_rays(t_cub *cub);
 void				import_texture(char *path, t_img *texture, t_cub *cub);
 int					create_trgb(int t, int r, int g, int b);
