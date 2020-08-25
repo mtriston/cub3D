@@ -32,7 +32,7 @@ t_bmp_info_header	info_header(t_cub *cub)
 
 	bih.size = 40;
 	bih.width = cub->frame.w;
-	bih.height = cub->frame.h * (-1);
+	bih.height = (cub->frame.h - 1) * (-1);
 	bih.planes = 1;
 	bih.bit_count = cub->img.bpp;
 	bih.compression = 0;
