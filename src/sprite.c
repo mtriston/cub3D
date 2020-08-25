@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 20:15:16 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/23 20:39:40 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/23 21:08:22 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,8 @@ static void	draw_sprite(t_cub *cub, t_item n)
 		while (++j < n.size)
 		{
 			tex_y = (unsigned int)n.tex_pos & (cub->tex.item.height - 1);
-			n.clr = cub->tex.item.addr + \
-				(tex_y * cub->tex.item.len + tex_x * (cub->tex.item.bpp / 8));
+			n.clr = (unsigned int *)(cub->tex.item.addr + \
+				(tex_y * cub->tex.item.len + tex_x * (cub->tex.item.bpp / 8)));
 			n.tex_pos += n.step;
 			if (n.y_ff + j > cub->frame.h || n.y_ff + i < 0 || *n.clr == 0x0)
 				continue;
