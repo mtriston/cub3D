@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 19:07:30 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/23 19:49:04 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/23 20:28:04 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,16 @@ static t_img			detect_side(t_cub *cub, t_ray ray)
 	if (ray.is_vert_hit)
 	{
 		if (ray.is_right)
-			return (cub->texture.east);
+			return (cub->tex.east);
 		else
-			return (cub->texture.west);
+			return (cub->tex.west);
 	}
 	else
 	{
 		if (ray.is_up)
-			return (cub->texture.south);
+			return (cub->tex.south);
 		else
-			return (cub->texture.north);
+			return (cub->tex.north);
 	}
 }
 
@@ -52,7 +52,7 @@ static t_render_utils	calc_one_stripe(t_cub *cub, int i, t_img tex)
 	return (col);
 }
 
-void					render_walls(t_cub *cub)
+static void				render_walls(t_cub *cub)
 {
 	t_img			tex;
 	t_render_utils	c;
@@ -66,7 +66,7 @@ void					render_walls(t_cub *cub)
 		while (c.y < c.top + c.height)
 		{
 			c.t_y = (unsigned int)c.tex_pos & ((unsigned int)tex.height - 1);
-			c.color = tex.addr + (c.t_y * tex.line_len + c.t_x * (tex.bpp / 8));
+			c.color = tex.addr + (c.t_y * tex.len + c.t_x * (tex.bpp / 8));
 			c.tex_pos += c.step;
 			if (c.y >= 0 && c.y <= cub->frame.h && i >= 0 && i <= cub->frame.w)
 				my_mlx_pixel_put(&cub->img, i, c.y, *(unsigned int *)c.color);
@@ -74,4 +74,19 @@ void					render_walls(t_cub *cub)
 		}
 		i++;
 	}
+}
+
+int						render_next_frame(t_cub *cub)
+{
+	mlx_do_sync(cub->frame.mlx);
+	ft_rect(0, 0, cub->frame.w, cub->frame.h / 2, \
+											cub->map.c_clr, &cub->img);
+	ft_rect(0, cub->frame.h / 2, cub->frame.w, \
+				cub->frame.h / 2, cub->map.f_clr, &cub->img);
+	player_location(cub);
+	cast_rays(cub);
+	render_walls(cub);
+	render_sprite(cub);
+	draw_minimap(cub);
+	return (1);
 }
