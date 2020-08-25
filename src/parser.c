@@ -1,125 +1,140 @@
-#include "../cub3D.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/25 22:30:40 by mtriston          #+#    #+#             */
+/*   Updated: 2020/08/25 22:32:15 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static void	write_resolution(char *str, t_vars *vars)
+#include "../includes/cub3D.h"
+
+static void	write_resolution(char *str, t_cub *cub)
 {
 	int m_w;
 	int m_h;
 
-	mlx_get_screen_size(vars->screen.mlx, &m_w, &m_h);
-	if (vars->screen.width != 0 || vars->screen.height != 0)
-		ft_exit("More then one resolution's configuration", vars);
+	mlx_get_screen_size(cub->frame.mlx, &m_w, &m_h);
+	if (cub->frame.w != -1 || cub->frame.h != -1)
+		ft_exit("More then one resolution's configuration", cub);
 	str = ft_strchr(str, 'R');
 	str++;
-	vars->screen.width = ft_atoi(str);
+	cub->frame.w = ft_atoi(str);
 	while (*str && ft_isspace(*str))
 		str++;
 	while (*str && ft_isdigit(*str))
 		str++;
-	vars->screen.height = ft_atoi(str);
-	if (vars->screen.width <= 0 || vars->screen.height <= 0)
-		ft_exit("Invalid resolution", vars);
-	vars->screen.width = vars->screen.width > m_w ? m_w : vars->screen.width;
-	vars->screen.height = \
-						vars->screen.height > m_h ? m_h : vars->screen.height;
+	cub->frame.h = ft_atoi(str);
+	if (cub->frame.w <= 0 || cub->frame.h <= 0)
+		ft_exit("Invalid resolution", cub);
+	cub->frame.w = cub->frame.w > m_w ? m_w : cub->frame.w;
+	cub->frame.h = \
+						cub->frame.h > m_h ? m_h : cub->frame.h;
 }
 
-static void	write_color(char *str, t_map *map, char type)
+static void	write_color(char *str, t_cub *cub, char type)
 {
-	int		c1;
-	int		c2;
-	int		c3;
-	//TODO: add check error
-	str = ft_strchr(str, type);
+	char	**clr;
+	int		rgb[3];
+	int		i;
+
+	i = -1;
+	while (*str && ft_isspace(*str))
+		str++;
 	str++;
-	while (*str && ft_isspace(*str))
-		str++;
-	c1 = ft_atoi(++str);
-	str = ft_strchr(str, ',');
-	c2 = ft_atoi(++str);
-	str = ft_strchr(str, ',');
-	c3 = ft_atoi(++str);
+	while (str[++i])
+		if (!ft_isdigit(str[i]) && str[i] != ',' && !ft_isspace(str[i]))
+			ft_exit("Invalid color in the config file", cub);
+	if (!(clr = ft_split(str, ',')))
+		ft_exit("Memory allocation error", cub);
+	i = -1;
+	while (clr && clr[++i] != NULL)
+	{
+		if ((rgb[i] = ft_atoi(clr[i])) > 255 || clr[i] < 0 || i > 2)
+			ft_exit("Invalid color in the config file", cub);
+		free_gc(clr[i]);
+	}
+	free_gc(clr);
 	if (type == 'C')
-		map->ceil_color = create_trgb(0, c1, c2, c3); 
+		cub->map.c_clr = create_trgb(0, rgb[0], rgb[1], rgb[2]);
 	else if (type == 'F')
-		map->floor_color = create_trgb(0, c1, c2, c3); 
+		cub->map.f_clr = create_trgb(0, rgb[0], rgb[1], rgb[2]);
 }
 
-static void	write_path_to_file(char *str, t_vars *vars, char type)
+static void	write_path_to_file(char *str, t_cub *cub, char type)
 {
-	char *temp;
-
-	str += 2;
 	while (*str && ft_isspace(*str))
 		str++;
-	temp = ft_strchr(str, ' ');
-	if (temp)
-		*temp = '\0';
+	str = str + 2;
+	while (*str && ft_isspace(*str))
+		str++;
 	if (type == 'N')
-		import_texture(str, &vars->texture.north, vars);
+		import_texture(str, &cub->tex.north, cub);
 	if (type == 'S')
-		import_texture(str, &vars->texture.south, vars);
+		import_texture(str, &cub->tex.south, cub);
 	if (type == 'W')
-		import_texture(str, &vars->texture.west, vars);
+		import_texture(str, &cub->tex.west, cub);
 	if (type == 'E')
-		import_texture(str, &vars->texture.east, vars);
+		import_texture(str, &cub->tex.east, cub);
 	if (type == 's')
-		import_texture(str, &vars->texture.sprite, vars);
+		import_texture(str, &cub->tex.item, cub);
 }
 
-static void	parse_parameters(t_list **list, t_vars *vars)
+static void	parse_parameters(t_list *list, t_cub *cub)
 {
-	t_list *ptr;
 	int		len;
 
-	ptr = *list;
-	while (ptr)
+	while (list)
 	{
-		len = ft_strlen(ptr->content);
-		if (ft_strnstr(ptr->content, "R ", len))
-			write_resolution(ptr->content, vars);
-		else if (ft_strnstr(ptr->content, "NO ", len))
-			write_path_to_file(ptr->content, vars, 'N');
-		else if (ft_strnstr(ptr->content, "SO ", len))
-			write_path_to_file(ptr->content, vars, 'S');
-		else if (ft_strnstr(ptr->content, "WE ", len))
-			write_path_to_file(ptr->content, vars, 'W');
-		else if (ft_strnstr(ptr->content, "EA ", len))
-			write_path_to_file(ptr->content, vars, 'E');
-		else if (ft_strnstr(ptr->content, "S ", len))
-			write_path_to_file(ptr->content, vars, 's');
-		else if (ft_strnstr(ptr->content, "F ", len))
-			write_color(ptr->content, &vars->map, 'F');
-		else if (ft_strnstr(ptr->content, "C ", len))
-			write_color(ptr->content, &vars->map, 'C');
-		ptr = ptr->next;
+		len = ft_strlen(list->content);
+		if (ft_strnstr(list->content, "R ", len))
+			write_resolution(list->content, cub);
+		else if (ft_strnstr(list->content, "NO ", len))
+			write_path_to_file(list->content, cub, 'N');
+		else if (ft_strnstr(list->content, "SO ", len))
+			write_path_to_file(list->content, cub, 'S');
+		else if (ft_strnstr(list->content, "WE ", len))
+			write_path_to_file(list->content, cub, 'W');
+		else if (ft_strnstr(list->content, "EA ", len))
+			write_path_to_file(list->content, cub, 'E');
+		else if (ft_strnstr(list->content, "S ", len))
+			write_path_to_file(list->content, cub, 's');
+		else if (ft_strnstr(list->content, "F ", len))
+			write_color(list->content, cub, 'F');
+		else if (ft_strnstr(list->content, "C ", len))
+			write_color(list->content, cub, 'C');
+		list = list->next;
 	}
+	validate_parameters(cub);
 }
 
-void		parser(char *path, t_vars *vars)
+void		parser(char *path, t_cub *cub)
 {
 	int		fd;
 	char	*line;
 	t_list	*head;
 	t_list	*ptr;
 	int		ret;
-	if (!path)
-		return ;
+
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
-		ft_exit("Invalid *.cub file", vars);
+		ft_exit("Invalid *.cub file", cub);
 	head = NULL;
 	while ((ret = get_next_line(fd, &line)) > 0)
 	{
 		if (!(ptr = ft_lstnew(line)))
-			ft_exit("Memory allocation failed", vars);
+			ft_exit("Memory allocation failed", cub);
 		ft_lstadd_back(&head, ptr);
 	}
 	if (ret == -1)
-	    ft_exit("get_next_line error", vars);
+		ft_exit("get_next_line error", cub);
 	if (!(ptr = ft_lstnew(line)))
-		ft_exit("Memory allocation failed", vars);
+		ft_exit("Memory allocation failed", cub);
 	ft_lstadd_back(&head, ptr);
 	close(fd);
-	parse_parameters(&head, vars);
-	parse_map(vars, head);
+	parse_parameters(head, cub);
+	parse_map(cub, head);
 }
