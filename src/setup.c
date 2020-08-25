@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/22 22:18:48 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/22 22:19:23 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/23 19:54:15 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ static void	prepare_structs(t_cub *cub)
 {
 	cub->frame.win = NULL;
 	cub->frame.mlx = NULL;
-	cub->texture.east.img = NULL;
-	cub->texture.west.img = NULL;
-	cub->texture.north.img = NULL;
-	cub->texture.south.img = NULL;
-	cub->texture.sprite.img = NULL;
+	cub->tex.east.img = NULL;
+	cub->tex.west.img = NULL;
+	cub->tex.north.img = NULL;
+	cub->tex.south.img = NULL;
+	cub->tex.item.img = NULL;
 	cub->img.img = NULL;
 	cub->cam.x = 0;
 	cub->cam.y = 0;
@@ -30,11 +30,11 @@ static void	prepare_structs(t_cub *cub)
 	cub->cam.angle = -1;
 	cub->cam.walk_speed = 5;
 	cub->cam.turn_speed = 5 * (M_PI / 180);
-	cub->frame.w = 0;
-	cub->frame.h = 0;
+	cub->frame.w = -1;
+	cub->frame.h = -1;
 	cub->map.map = NULL;
-	cub->map.f_clr = 0;
-	cub->map.c_clr = 0;
+	cub->map.f_clr = -1;
+	cub->map.c_clr = -1;
 	cub->map.items = 0;
 }
 
@@ -44,7 +44,7 @@ static void	init_img(t_img *img, t_frame *screen, t_cub *cub)
 	if (img->img == NULL)
 		ft_exit("mlx_new_image failed", cub);
 	img->addr = mlx_get_data_addr(img->img, &img->bpp, \
-									&img->line_len, &img->endian);
+									&img->len, &img->endian);
 	if (img->addr == NULL)
 		ft_exit("mlx_get_data_addr failed", cub);
 }
