@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/14 23:32:18 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/19 21:30:09 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/26 00:13:45 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static void		gc_lstclear(t_list **lst)
 			ptr = ptr->next;
 			free(temp->content);
 			free(temp);
-			
 		}
 		*lst = NULL;
 	}
@@ -43,19 +42,25 @@ static t_list	*gc_lstnew(void *content)
 	return (elem);
 }
 
-static void	gc_lstremove(t_list **root, void *data)
+static void		gc_lstdelone(t_list *lst, void (*del)(void*))
 {
-	t_list *node;
-	t_list *temp;
+	if (lst != NULL)
+	{
+		del(lst->content);
+		free(lst);
+	}
+}
+
+static void		gc_lstremove(t_list **root, void *data)
+{
+	t_list	*node;
+	t_list	*temp;
 	int		i;
 
-	if (root == NULL || *root == NULL)
-		return ;
 	while (data == (*root)->content)
 	{
 		temp = (*root)->next;
-		free((*root)->content);
-		free(*root);
+		gc_lstdelone(*root, free);
 		(*root) = temp;
 	}
 	node = *root;
@@ -66,18 +71,15 @@ static void	gc_lstremove(t_list **root, void *data)
 		if (data == node->content)
 		{
 			temp->next = node->next;
-			free(node->content);
-			free(node);
+			gc_lstdelone(node, free);
 			node = temp;
 			i = 0;
 		}
-		if (i > 0)
-			temp = temp->next;
-		if (node != NULL)
-			node = node->next;
-		i++;
+		temp = i++ > 0 ? temp->next : temp;
+		node = node != NULL ? node->next : node;
 	}
 }
+
 void			memory_manager(void *ptr, int action)
 {
 	static t_list *collector = NULL;

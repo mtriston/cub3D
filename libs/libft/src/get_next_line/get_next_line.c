@@ -60,7 +60,5 @@ int			get_next_line(int fd, char **line)
 			return (-1);
 		free_gc(temp);
 	}
-	if (read_bytes == -1)
-		return (-1);
-	return ((ft_strlen(over) || read_bytes) ? 1 : 0);
+	return ((ft_strlen(over) || read_bytes > 0) ? 1 : read_bytes);
 }
