@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/25 22:30:40 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 22:33:53 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/26 19:24:28 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,10 @@ static void	parse_parameters(t_list *list, t_cub *cub)
 			write_color(list->content, cub, 'F');
 		else if (ft_strnstr(list->content, "C ", len))
 			write_color(list->content, cub, 'C');
+		else
+			validate_line(list->content, cub);
 		list = list->next;
 	}
-	validate_parameters(cub);
 }
 
 void		parser(char *path, t_cub *cub)
@@ -136,5 +137,6 @@ void		parser(char *path, t_cub *cub)
 	ft_lstadd_back(&head, ptr);
 	close(fd);
 	parse_parameters(head, cub);
+	validate_parameters(cub);
 	parse_map(cub, head);
 }

@@ -154,6 +154,7 @@ typedef struct		s_cub
 int					ft_close(t_cub *cub);
 void				ft_exit(char *message, t_cub *cub);
 int					validate_args(int argc, char **argv, t_cub *cub);
+void				validate_line(char *line, t_cub *cub);
 void				validate_parameters(t_cub *cub);
 void				validate_map(t_cub *cub, char **map);
 void				my_mlx_pixel_put(t_img *img, int x, int y,\

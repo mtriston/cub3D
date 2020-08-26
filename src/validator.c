@@ -6,11 +6,19 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 20:57:47 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 22:52:29 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/26 19:27:39 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+
+void	validate_line(char *line, t_cub *cub)
+{
+	while (ft_isblank(*line) && *line)
+		line++;
+	if (*line != '1' && *line != '\0')
+		ft_exit("Unknown instruction in config file", cub);
+}
 
 int		validate_args(int argc, char **argv, t_cub *cub)
 {

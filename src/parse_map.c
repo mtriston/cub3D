@@ -62,8 +62,6 @@ static void	parse_line(char *str, int y, t_cub *cub)
 	int x;
 
 	x = 0;
-	if (ft_atoi(str) == 0)
-		ft_exit("Invalid map", cub);
 	while (str[x] != '\0')
 	{
 		if (str[x] == 'N' || str[x] == 'S' || str[x] == 'W' || str[x] == 'E')
