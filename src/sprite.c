@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 20:15:16 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/23 21:08:22 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/30 16:13:40 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static void	draw_sprite(t_cub *cub, t_item n)
 			n.clr = (unsigned int *)(cub->tex.item.addr + \
 				(tex_y * cub->tex.item.len + tex_x * (cub->tex.item.bpp / 8)));
 			n.tex_pos += n.step;
-			if (n.y_ff + j > cub->frame.h || n.y_ff + i < 0 || *n.clr == 0x0)
+			if (n.y_ff + j > cub->frame.h || n.y_ff + j < 0 || *n.clr == 0x0)
 				continue;
 			my_mlx_pixel_put(&cub->img, n.x_ff + i, n.y_ff + j, *n.clr);
 		}
