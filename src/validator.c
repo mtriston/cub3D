@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/23 20:57:47 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/26 19:27:39 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/26 20:04:09 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3d.h"
+#include "cub3d.h"
 
 void	validate_line(char *line, t_cub *cub)
 {
@@ -18,6 +18,23 @@ void	validate_line(char *line, t_cub *cub)
 		line++;
 	if (*line != '1' && *line != '\0')
 		ft_exit("Unknown instruction in config file", cub);
+}
+
+void	validate_color(char *line, char type, t_cub *cub)
+{
+	int i;
+
+	i = 0;
+	if (type == 'F' && cub->map.f_clr != -1)
+		ft_exit("More then one floor color instruction", cub);
+	if (type == 'C' && cub->map.c_clr != -1)
+		ft_exit("More then one ceil color instruction", cub);
+	while (line[i])
+	{
+		if (!ft_isdigit(line[i]) && line[i] != ',' && !ft_isspace(line[i]))
+			ft_exit("Invalid color in the config file", cub);
+		i++;
+	}
 }
 
 int		validate_args(int argc, char **argv, t_cub *cub)

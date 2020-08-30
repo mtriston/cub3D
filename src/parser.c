@@ -6,11 +6,11 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/25 22:30:40 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/26 19:24:28 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/30 16:20:08 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/cub3d.h"
+#include "cub3d.h"
 
 static void	write_resolution(char *str, t_cub *cub)
 {
@@ -41,21 +41,20 @@ static void	write_color(char *str, t_cub *cub, char type)
 	int		rgb[3];
 	int		i;
 
-	i = -1;
 	while (*str && ft_isspace(*str))
 		str++;
 	str++;
-	while (str[++i])
-		if (!ft_isdigit(str[i]) && str[i] != ',' && !ft_isspace(str[i]))
-			ft_exit("Invalid color in the config file", cub);
+	validate_color(str, type, cub);
+	ft_bzero(rgb, 3);
 	if (!(clr = ft_split(str, ',')))
 		ft_exit("Memory allocation error", cub);
-	i = -1;
-	while (clr && clr[++i] != NULL)
+	i = 0;
+	while (clr && clr[i] != NULL)
 	{
 		if ((rgb[i] = ft_atoi(clr[i])) > 255 || clr[i] < 0 || i > 2)
 			ft_exit("Invalid color in the config file", cub);
 		free_gc(clr[i]);
+		i++;
 	}
 	free_gc(clr);
 	if (type == 'C')

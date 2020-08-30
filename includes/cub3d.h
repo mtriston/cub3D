@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/15 15:36:14 by mtriston          #+#    #+#             */
-/*   Updated: 2020/08/25 23:43:10 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/08/30 16:20:08 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,7 @@ int					validate_args(int argc, char **argv, t_cub *cub);
 void				validate_line(char *line, t_cub *cub);
 void				validate_parameters(t_cub *cub);
 void				validate_map(t_cub *cub, char **map);
+void				validate_color(char *line, char type, t_cub *cub);
 void				my_mlx_pixel_put(t_img *img, int x, int y,\
 												unsigned int color);
 void				bitmap(t_cub *cub);
